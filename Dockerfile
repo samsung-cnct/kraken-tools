@@ -50,7 +50,7 @@ RUN     wget https://github.com/barnybug/cli53/releases/download/${AWS_CLI53_VER
 # Kubernetes
 
         # Adding Kubernetes
-RUN     curl -O https://storage.googleapis.com/kubernetes-release/release/${K8SVERSION}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /usr/bin
+RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /usr/bin
 
         # Adding Helm
 RUN     wget https://github.com/kubernetes/helm/releases/download/${K8S_HELM_VERSION}/helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && \
