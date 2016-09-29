@@ -15,7 +15,7 @@ ENV     K8S_HELM_VERSION=v2.0.0-alpha.4
 ADD     /alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
-RUN     apk update && apk add openssl python bash py-pip unzip curl zip && \
+RUN     apk update && apk add openssl python bash py-pip unzip curl zip make && \
     	/alpine-builds/build-docker.sh && rm -rf /alpine-builds
 
 # Python / ansible addon work
