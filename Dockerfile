@@ -15,7 +15,7 @@ ENV     K8S_HELM_VERSION=v2.0.0-alpha.4
 ADD     /alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
-RUN     apk update && apk add openssl python bash py-pip py-cffi py-cryptography unzip curl zip && \
+RUN     apk update && apk add openssl python bash py-pip py-cffi py-cryptography unzip curl zip make && \
         apk add --virtual build-deps gcc libffi-dev python-dev linux-headers musl-dev openssl-dev && \
     	/alpine-builds/build-docker.sh && rm -rf /alpine-builds
 
