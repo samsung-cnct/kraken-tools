@@ -15,12 +15,14 @@ ENV     K8S_HELM_VERSION=v2.0.0-alpha.4
 ADD     /alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
-RUN     apk update && apk add openssl python bash py-pip unzip curl zip make && \
+RUN     apk update && apk add openssl python bash py-pip py-cffi py-cryptography unzip curl zip && \
+        apk add --virtual build-deps gcc libffi-dev python-dev linux-headers musl-dev openssl-dev && \
     	/alpine-builds/build-docker.sh && rm -rf /alpine-builds
 
 # Python / ansible addon work
-
-        # Adding Python packages (awscli and netaddr)
+        # update pip
+RUN     pip install --upgrade pip
+        # Adding netaddr
 RUN     pip install netaddr
 
 # Terraform
@@ -46,6 +48,9 @@ RUN     pip install awscli
 RUN     wget https://github.com/barnybug/cli53/releases/download/${AWS_CLI53_VERSION}/cli53-linux-amd64 && \
         chmod a+x cli53-linux-amd64 && mv cli53-linux-amd64 /usr/bin/
 
+# Google cloud work
+        # Adding gs util
+RUN     pip install gsutil
 
 # Kubernetes
 
@@ -55,3 +60,8 @@ RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VER
         # Adding Helm
 RUN     wget https://github.com/kubernetes/helm/releases/download/${K8S_HELM_VERSION}/helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && \
         tar -zxvf helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && mv linux-amd64/helm /usr/bin/ && rm -rf linux-amd64 helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz
+
+# Clean up
+
+        # clean up dev tools, keep make
+RUN     apk del build-deps && apk add make && rm -rf /var/cache/apk/*
