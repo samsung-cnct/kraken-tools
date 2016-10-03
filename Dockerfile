@@ -7,6 +7,12 @@ ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.3
 
 ENV     AWS_CLI53_VERSION=0.8.5
 
+ENV     GCLOUD_SDK_VERSION=128.0.0
+ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
+ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
+        # google cloud kubectl is superceeded by donwloaded kubectl
+ENV     PATH $PATH:/google-cloud-sdk/bin
+
 ENV     K8S_VERSION=v1.3.7
 ENV     K8S_HELM_VERSION=v2.0.0-alpha.4
 
@@ -15,8 +21,7 @@ ENV     K8S_HELM_VERSION=v2.0.0-alpha.4
 ADD     /alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
-RUN     apk update && apk add openssl python bash py-pip py-cffi py-cryptography unzip curl zip make && \
-        apk add --virtual build-deps gcc libffi-dev python-dev linux-headers musl-dev openssl-dev && \
+RUN     apk update && apk add openssl python bash wget py-pip py-cffi py-cryptography unzip curl zip make && \
     	/alpine-builds/build-docker.sh && rm -rf /alpine-builds
 
 # Python / ansible addon work
@@ -49,8 +54,21 @@ RUN     wget https://github.com/barnybug/cli53/releases/download/${AWS_CLI53_VER
         chmod a+x cli53-linux-amd64 && mv cli53-linux-amd64 /usr/bin/
 
 # Google cloud work
-        # Adding gs util
-RUN     pip install gsutil
+RUN     wget https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.zip && \
+        unzip google-cloud-sdk.zip && \
+        rm google-cloud-sdk.zip
+RUN     google-cloud-sdk/install.sh --usage-reporting=false --path-update=false --bash-completion=false
+
+
+        # Disable updater check for the whole installation.
+        # Users won't be bugged with notifications to update to the latest version of gcloud.
+RUN     google-cloud-sdk/bin/gcloud config set --installation component_manager/disable_update_check true
+
+        # Disable updater completely.
+        # Running `gcloud components update` doesn't really do anything in a union FS.
+        # Changes are lost on a subsequent run.
+RUN     sed -i -- 's/\"disable_updater\": false/\"disable_updater\": true/g' /google-cloud-sdk/lib/googlecloudsdk/core/config.json
+
 
 # Kubernetes
 
