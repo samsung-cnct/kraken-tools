@@ -5,8 +5,6 @@ ENV     TERRAFORM_VERSION=0.7.3
 ENV     TF_COREOSBOX_VERSION=v0.0.2
 ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.3
 
-ENV     AWS_CLI53_VERSION=0.8.5
-
 ENV     GCLOUD_SDK_VERSION=128.0.0
 ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
 ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
@@ -16,12 +14,15 @@ ENV     PATH $PATH:/google-cloud-sdk/bin
 ENV     K8S_VERSION=v1.3.7
 ENV     K8S_HELM_VERSION=v2.0.0-alpha.4
 
+ENV     GOPATH /go
+ENV     GO15VENDOREXPERIMENT 1
+
 # Prepping Alpine
 
 ADD     /alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
-RUN     apk update && apk add openssl python bash wget py-pip py-cffi py-cryptography unzip curl zip make && \
+RUN     apk update && apk add --no-cache openssl python bash wget py-pip py-cffi py-cryptography unzip curl zip make go git && \
     	/alpine-builds/build-docker.sh && rm -rf /alpine-builds
 
 # Python / ansible addon work
@@ -50,8 +51,8 @@ RUN 	wget https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/
 RUN     pip install awscli
 
         # Adding cli53
-RUN     wget https://github.com/barnybug/cli53/releases/download/${AWS_CLI53_VERSION}/cli53-linux-amd64 && \
-        chmod a+x cli53-linux-amd64 && mv cli53-linux-amd64 /usr/bin/
+RUN     go get github.com/barnybug/cli53 && cd $GOPATH/src/github.com/barnybug/cli53 && make install && \
+        rm -Rf $GOPATH/src && mv $GOPATH/bin/cli53 /usr/bin/cli53
 
 # Google cloud work
 RUN     wget https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.zip && \
