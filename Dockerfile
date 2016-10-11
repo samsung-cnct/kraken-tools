@@ -29,7 +29,7 @@ RUN     apk update && apk add --no-cache openssl python bash wget py-pip py-cffi
         # update pip
 RUN     pip install --upgrade pip
         # Adding netaddr
-RUN     pip install netaddr
+RUN     pip install netaddr boto
 
 # Terraform
 
