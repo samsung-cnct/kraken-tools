@@ -79,7 +79,7 @@ RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VER
         # Adding Helm
         # temporary: https://github.com/kubernetes/helm/issues/1362
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION}-linux-386.tar.gz && \
-        tar -zxvf helm-${K8S_HELM_VERSION}-llinux-386.tar.gz && mv linux-386/helm /usr/bin/ && rm -rf linux-386 helm-${K8S_HELM_VERSION}-linux-386.tar.gz
+        tar -zxvf helm-${K8S_HELM_VERSION}-linux-386.tar.gz && mv linux-386/helm /usr/bin/ && rm -rf linux-386 helm-${K8S_HELM_VERSION}-linux-386.tar.gz
 
 #RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && \
 #        tar -zxvf helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && mv linux-amd64/helm /usr/bin/ && rm -rf linux-amd64 helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz
