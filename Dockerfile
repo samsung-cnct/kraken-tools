@@ -1,18 +1,18 @@
 FROM alpine:3.4
 MAINTAINER Michael Venezia <mvenezia@gmail.com>
 
-ENV     TERRAFORM_VERSION=0.7.3
+ENV     TERRAFORM_VERSION=0.7.5
 ENV     TF_COREOSBOX_VERSION=v0.0.2
 ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.3
 
 ENV     GCLOUD_SDK_VERSION=128.0.0
 ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
 ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
-        # google cloud kubectl is superceeded by donwloaded kubectl
+        # google cloud kubectl is superceeded by downloaded kubectl
 ENV     PATH $PATH:/google-cloud-sdk/bin
 
 ENV     K8S_VERSION=v1.3.7
-ENV     K8S_HELM_VERSION=v2.0.0-alpha.4
+ENV     K8S_HELM_VERSION=v2.0.0-alpha.5
 
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
