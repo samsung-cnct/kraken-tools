@@ -1,7 +1,7 @@
 FROM alpine:3.4
 MAINTAINER Michael Venezia <mvenezia@gmail.com>
 
-ENV     TERRAFORM_VERSION=0.7.3
+ENV     TERRAFORM_VERSION=0.7.7
 ENV     TF_COREOSBOX_VERSION=v0.0.2
 ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.3
 
@@ -12,7 +12,7 @@ ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
 ENV     PATH $PATH:/google-cloud-sdk/bin
 
 ENV     K8S_VERSION=v1.3.7
-ENV     K8S_HELM_VERSION=v2.0.0-alpha.5
+ENV     K8S_HELM_VERSION=v2.0.0-beta.1
 
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
@@ -77,9 +77,5 @@ RUN     sed -i -- 's/\"disable_updater\": false/\"disable_updater\": true/g' /go
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /usr/bin
 
         # Adding Helm
-        # temporary: https://github.com/kubernetes/helm/issues/1362
-RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION}-linux-386.tar.gz && \
-        tar -zxvf helm-${K8S_HELM_VERSION}-linux-386.tar.gz && mv linux-386/helm /usr/bin/ && rm -rf linux-386 helm-${K8S_HELM_VERSION}-linux-386.tar.gz
-
-#RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && \
-#        tar -zxvf helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && mv linux-amd64/helm /usr/bin/ && rm -rf linux-amd64 helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz
+RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && \
+        tar -zxvf helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && mv linux-amd64/helm /usr/bin/ && rm -rf linux-amd64 helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz
