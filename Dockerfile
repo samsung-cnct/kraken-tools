@@ -1,9 +1,9 @@
 FROM alpine:3.4
 MAINTAINER Michael Venezia <mvenezia@gmail.com>
 
-ENV     TERRAFORM_VERSION=0.7.11
-ENV     TF_COREOSBOX_VERSION=v0.0.2
-ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.3
+ENV     TERRAFORM_VERSION=0.8.6
+ENV     TF_COREOSBOX_VERSION=v0.0.3
+ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.4
 
 ENV     GCLOUD_SDK_VERSION=128.0.0
 ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
