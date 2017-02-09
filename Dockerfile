@@ -26,10 +26,11 @@ RUN     apk update && apk add --no-cache openssl python bash wget py-pip py-cffi
     	/alpine-builds/build-docker.sh && rm -rf /alpine-builds
 
 # Python / ansible addon work
+ADD     requirements.txt /requirements.txt
         # update pip
 RUN     pip install --upgrade pip
-        # Adding netaddr
-RUN     pip install netaddr boto
+        # install all python packages
+RUN     pip install -r /requirements.txt
 
 # Terraform
 
