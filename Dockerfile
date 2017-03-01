@@ -51,10 +51,6 @@ RUN 	wget https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/
         # Adding AWS CLI
 RUN     pip install awscli
 
-        # Adding cli53
-RUN     go get github.com/barnybug/cli53 && cd $GOPATH/src/github.com/barnybug/cli53 && make install && \
-        rm -Rf $GOPATH/src && mv $GOPATH/bin/cli53 /usr/bin/cli53
-
 # Google cloud work
 RUN     wget https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.zip && \
         unzip google-cloud-sdk.zip && \
