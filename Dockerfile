@@ -14,6 +14,10 @@ ENV     PATH $PATH:/google-cloud-sdk/bin
 ENV     K8S_VERSION=v1.4.4
 ENV     K8S_HELM_VERSION=v2.1.3
 
+ENV     K8S_VERSION_1_4=v1.4.9
+ENV     K8S_VERSION_1_5=v1.5.4
+ENV     K8S_VERSION_1_6=v1.6.0-beta.4
+
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
 
@@ -76,3 +80,12 @@ RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VER
         # Adding Helm
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && \
         tar -zxvf helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && mv linux-amd64/helm /usr/bin/ && rm -rf linux-amd64 helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz
+
+        # Kubectl versioning
+RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin
+RUN     mkdir -p /opt/cnct/kubernetes/v1.5/bin
+RUN     mkdir -p /opt/cnct/kubernetes/v1.6/bin
+
+RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_4}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /opt/cnct/kubernetes/v1.4/bin
+RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /opt/cnct/kubernetes/v1.5/bin
+RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /opt/cnct/kubernetes/v1.6/bin
