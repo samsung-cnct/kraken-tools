@@ -18,6 +18,11 @@ ENV     K8S_VERSION_1_4=v1.4.9
 ENV     K8S_VERSION_1_5=v1.5.4
 ENV     K8S_VERSION_1_6=v1.6.0-beta.4
 
+ENV     K8S_HELM_VERSION_1_4=v2.1.3
+ENV     K8S_HELM_VERSION_1_5=v2.2.3
+# Currently, there is no support for K8s 1.6. Version 2.4.0 will be released May 1, 2017 and will support 1.6.
+#ENV     K8S_HELM_VERSION_1_6=v2.4.0
+
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
 
@@ -80,6 +85,18 @@ RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VER
         # Adding Helm
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && \
         tar -zxvf helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && mv linux-amd64/helm /usr/bin/ && rm -rf linux-amd64 helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz
+
+        #Helm versioning
+RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin/helm
+RUN     mkdir -p /opt/cnct/kubernetes/v1.5/bin/helm
+#RUN     mkdir -p /opt/cnct/kubernetes/v1.6/bin/helm
+
+RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz && \
+        tar -zxvf helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz && mv linux-amd64/helm /opt/cnct/kubernetes/v1.4/bin/helm && rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz
+RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz && \
+        tar -zxvf helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz && mv linux-amd64/helm /opt/cnct/kubernetes/v1.5/bin/helm && rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz
+#RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && \
+#        tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm && rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz
 
         # Kubectl versioning
 RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin
