@@ -3,6 +3,7 @@ MAINTAINER Michael Venezia <mvenezia@gmail.com>
 
 ENV     TERRAFORM_VERSION=0.8.6
 ENV     TF_COREOSBOX_VERSION=v0.0.3
+ENV     TF_DISTROIMAGE_VERSION=v0.0.1
 ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.4
 
 ENV     GCLOUD_SDK_VERSION=128.0.0
@@ -54,6 +55,10 @@ RUN     wget https://github.com/samsung-cnct/terraform-provider-execute/releases
 	    # Adding Terraform CoreOS Box addon
 RUN 	wget https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
 	    tar -zxvf terraform-provider-coreosbox_linux_amd64.tar.gz && rm terraform-provider-coreosbox_linux_amd64.tar.gz && mv terraform-provider-coreosbox /usr/bin/
+
+	    # Adding Terraform Distro Image Selector addon
+RUN 	wget https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
+	    tar -zxvf terraform-provider-distroimage_linux_amd64.tar.gz && rm terraform-provider-distroimage_linux_amd64.tar.gz && mv terraform-provider-distro /usr/bin/
 
 # AWS work
 
