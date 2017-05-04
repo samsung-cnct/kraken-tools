@@ -20,7 +20,7 @@ ENV     K8S_VERSION_1_5=v1.5.4
 ENV     K8S_VERSION_1_6=v1.6.0-beta.4
 
 ENV     K8S_HELM_VERSION_1_4=v2.1.3
-ENV     K8S_HELM_VERSION_1_5=v2.2.3
+ENV     K8S_HELM_VERSION_1_5=v2.3.1
 # Currently, there is no support for K8s 1.6. Version 2.4.0 will be released May 1, 2017 and will support 1.6.
 #ENV     K8S_HELM_VERSION_1_6=v2.4.0
 
