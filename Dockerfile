@@ -100,8 +100,8 @@ RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSI
         tar -zxvf helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz && mv linux-amd64/helm /opt/cnct/kubernetes/v1.4/bin/helm && rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz && \
         tar -zxvf helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz && mv linux-amd64/helm /opt/cnct/kubernetes/v1.5/bin/helm && rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz
-#RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && \
-#        tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm && rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz
+RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && \
+        tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm && rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz
 
         # Kubectl versioning
 #RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin
