@@ -41,11 +41,6 @@ RUN     pip install --upgrade pip
         # install all python packages
 RUN     pip install -r /requirements.txt
 
-
-### HACK TO WORK AROUND ANSIBLE 2.3.0 BUG
-#   remove once updated to 2.3.1
-RUN     cd /usr/lib/python2.7/site-packages && curl -o - https://github.com/ansible/ansible/commit/b99f4892d7cef2b91f7376f9255b6614ce2494dc.patch | patch -p2
-
 # Terraform
 
         #Installing Terraform binary
