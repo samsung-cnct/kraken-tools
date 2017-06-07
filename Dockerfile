@@ -23,6 +23,11 @@ ENV     K8S_HELM_VERSION_1_4=v2.1.3
 ENV     K8S_HELM_VERSION_1_5=v2.3.1
 ENV     K8S_HELM_VERSION_1_6=v2.4.2
 
+#Latest version of tools
+ENV     LATEST=v1.6
+ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_6
+ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_6
+
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
 
@@ -80,22 +85,22 @@ RUN     google-cloud-sdk/bin/gcloud config set --installation component_manager/
         # Changes are lost on a subsequent run.
 RUN     sed -i -- 's/\"disable_updater\": false/\"disable_updater\": true/g' /google-cloud-sdk/lib/googlecloudsdk/core/config.json
 
-
-# Kubernetes
-
         # Adding Kubernetes
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /usr/bin
 
-        # Adding Helm
+         # Adding Helm
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && \
         tar -zxvf helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && mv linux-amd64/helm /usr/bin/ && rm -rf linux-amd64 helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz
 
+# Kubernetes
 
-        #Helm versioning
+        # Creating path for helm and kubectl executables
 RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin
 RUN     mkdir -p /opt/cnct/kubernetes/v1.5/bin
 RUN     mkdir -p /opt/cnct/kubernetes/v1.6/bin
+RUN     ln -s /opt/cnct/kubernetes/$LATEST /opt/cnct/kubernetes/latest
 
+        # Helm versioning
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz && \
         tar -zxvf helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz && mv linux-amd64/helm /opt/cnct/kubernetes/v1.4/bin/helm && rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz && \
@@ -104,10 +109,6 @@ RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSI
         tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm && rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz
 
         # Kubectl versioning
-#RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin
-#RUN     mkdir -p /opt/cnct/kubernetes/v1.5/bin
-#RUN     mkdir -p /opt/cnct/kubernetes/v1.6/bin
-
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_4}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /opt/cnct/kubernetes/v1.4/bin
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /opt/cnct/kubernetes/v1.5/bin
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /opt/cnct/kubernetes/v1.6/bin
