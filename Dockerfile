@@ -12,6 +12,9 @@ ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
         # google cloud kubectl is superceeded by downloaded kubectl
 ENV     PATH $PATH:/google-cloud-sdk/bin
 
+ENV     K8S_VERSION=v1.4.12
+ENV     K8S_HELM_VERSION=v2.3.1
+
 ENV     K8S_VERSION_1_4=v1.4.12
 ENV     K8S_VERSION_1_5=v1.5.7
 ENV     K8S_VERSION_1_6=v1.6.4
@@ -82,6 +85,12 @@ RUN     google-cloud-sdk/bin/gcloud config set --installation component_manager/
         # Changes are lost on a subsequent run.
 RUN     sed -i -- 's/\"disable_updater\": false/\"disable_updater\": true/g' /google-cloud-sdk/lib/googlecloudsdk/core/config.json
 
+        # Adding Kubernetes
+RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl && chmod a+x kubectl && mv kubectl /usr/bin
+
+         # Adding Helm
+RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && \
+        tar -zxvf helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz && mv linux-amd64/helm /usr/bin/ && rm -rf linux-amd64 helm-${K8S_HELM_VERSION}-linux-amd64.tar.gz
 
 # Kubernetes
 
