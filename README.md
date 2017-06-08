@@ -8,8 +8,9 @@ work should be done here and let the K2 build focus on installing and
 configuring the code in the K2 repo.
 
 ## Sample work flow
+Here we document how a developer would use k2-tools to work with a cluster. 
 
-Assumptions:
+### Assumptions
 * You have used K2 to generate a config file.
 * You have pull the latest image on your machine (keeps you on track with changes upstream)
 
@@ -19,9 +20,9 @@ docker pull quay.io/samsung_cnct/k2-tools
 
 * You are currently on the your local k2 github fork directory
 
-Steps:
+### Steps
 * Generate latest configuration file, as suggested by the K2 repo.
-* Create a docker container that access your cluster k2 configs (generated earlier)
+* Create a docker container that access your cluster k2 workspace and cluster configs (generated earlier)
 
 ```
 hack/dockerdev -c <PATH_TO_CONFIGS>/<YOUR_CONFIG>.yaml
