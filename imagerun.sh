@@ -29,7 +29,7 @@ pip install -r /requirements.txt
 
 # Google cloud work
 wget https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.zip
-unzip google-cloud-sdk.zip
+unzip -o google-cloud-sdk.zip
 rm google-cloud-sdk.zip
 google-cloud-sdk/install.sh --usage-reporting=false --path-update=false --bash-completion=false
 # Disable updater check for the whole installation.
