@@ -1,5 +1,4 @@
-        # When updating alpine version, remove zlib from apk add list below
-FROM alpine:3.4
+FROM alpine:3.6
 MAINTAINER Michael Venezia <mvenezia@gmail.com>
 
 ENV     TERRAFORM_VERSION=0.8.6
@@ -37,8 +36,7 @@ ENV     GO15VENDOREXPERIMENT 1
 ADD     /alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
-        # NOTE:  zlib is included only because of CVE-2016-9843, and should be removed when we are able to update the alpine version
-RUN     apk update && apk upgrade zlib && apk add openssl python bash wget py-pip py-cffi py-cryptography unzip zip make git && \
+RUN     apk update && apk add libffi-dev openssl-dev python bash wget py-pip py-cffi py-cryptography unzip zip make git && \
     	/alpine-builds/build-docker.sh && rm -rf /alpine-builds &&  rm -rfv /var/cache/apk/*
 
 # wget

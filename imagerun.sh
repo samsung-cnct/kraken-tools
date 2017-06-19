@@ -5,7 +5,8 @@ set -o pipefail
 # Adding baseline alpine packages
 apk update 
 apk add --no-cache  \
-    openssl \
+    libffi-dev \
+    openssl-dev \
     ca-certificates \
     python \
     bash \
