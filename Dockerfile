@@ -22,7 +22,7 @@ ENV     K8S_VERSION_1_6=v1.6.6
 
 ENV     K8S_HELM_VERSION_1_4=v2.1.3
 ENV     K8S_HELM_VERSION_1_5=v2.3.1
-ENV     K8S_HELM_VERSION_1_6=v2.4.2
+ENV     K8S_HELM_VERSION_1_6=v2.5.0
 
 #Latest version of tools
 ENV     LATEST=v1.6
