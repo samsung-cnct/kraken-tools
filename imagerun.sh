@@ -6,6 +6,7 @@ set -o pipefail
 apk update 
 apk add --no-cache  \
     libffi-dev \
+    openssl \
     openssl-dev \
     ca-certificates \
     python \
@@ -61,6 +62,6 @@ google-cloud-sdk/bin/gcloud meta list-gcloud --format=json | gzip > /google-clou
 mv /gcloud_tree.py /google-cloud-sdk/lib/googlecloudsdk/command_lib/gcloud_tree.py
 
 # Clean up unneeded data
-apk del alpine-sdk mtools mkinitfs kmod squashfs-tools git g++ gcc make musl-dev libc-dev python-dev linux-headers
+apk del alpine-sdk libffi-dev openssl-dev mtools mkinitfs kmod squashfs-tools git g++ gcc make musl-dev libc-dev python-dev linux-headers
 rm -rfv ~/.cache
 rm -rfv /var/cache/apk/*
