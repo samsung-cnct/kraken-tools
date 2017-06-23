@@ -31,6 +31,8 @@ ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_6
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
 
+ENV     HELM_HOME=/etc/helm
+
 # Prepping Alpine
 
 ADD     /alpine-builds /alpine-builds
@@ -85,7 +87,8 @@ RUN     sed -i -- 's/\"disable_updater\": false/\"disable_updater\": true/g' /go
     # Creating path for helm and kubectl executables
 RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin \
                  /opt/cnct/kubernetes/v1.5/bin \
-                 /opt/cnct/kubernetes/v1.6/bin && \
+                 /opt/cnct/kubernetes/v1.6/bin \
+                 /etc/helm/plugins/cnr && \
         ln -s /opt/cnct/kubernetes/$LATEST /opt/cnct/kubernetes/latest
 
 # Kubectl
@@ -121,3 +124,7 @@ ADD     imagerun.sh /imagerun.sh
 ADD     gcloud_tree.py /gcloud_tree.py
 
 RUN     /imagerun.sh
+RUN     ln -s /usr/lib/python2.7/site-packages/cnrclient/commands/plugins/helm/cnr.sh \
+            /usr/lib/python2.7/site-packages/cnrclient/commands/plugins/helm/plugin.yaml \
+            /usr/bin/cnr \
+            /etc/helm/plugins/cnr
