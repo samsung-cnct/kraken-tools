@@ -1,42 +1,46 @@
 #!/bin/sh -e
 set -o pipefail
 
-# Prepping Alpine
-# Adding baseline alpine packages
-apk update 
-apk add --no-cache  \
-    libffi-dev \
-    openssl \
-    openssl-dev \
-    ca-certificates \
-    python \
-    bash \
+# Packages required during installation but not run time.
+DEVEL_PACKAGES="alpine-sdk \
+    git \
     py-pip \
     py-cffi \
     py-cryptography \
-    unzip \
-    zip \
     python-dev \
+    make \
     gcc \
+    g++ \
     linux-headers \
+    libc-dev \
     musl-dev \
-    g++
+    openssl-dev \
+    libffi-dev \
+    mtools \
+    mkinitfs \
+    kmod \
+    squashfs-tools \
+"
 
-# Python / ansible addon work
-# update pip
+apk update 
+apk add --no-cache ${DEVEL_PACKAGES}
+
 pip install --upgrade pip
-# install all python packages
 pip install -r /requirements.txt
 
+/alpine-builds/build-docker.sh
+rm -rf /alpine-builds
 
-# Google cloud work
 wget https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.zip
 unzip -o google-cloud-sdk.zip
 rm google-cloud-sdk.zip
 google-cloud-sdk/install.sh --usage-reporting=false --path-update=false --bash-completion=false
+
 # Disable updater check for the whole installation.
-# Users won't be bugged with notifications to update to the latest version of gcloud.
+# Users won't be bugged with notifications to update to the latest version of
+# gcloud.
 google-cloud-sdk/bin/gcloud config set --installation component_manager/disable_update_check true
+
 # Disable updater completely.
 # Running `gcloud components update` doesn't really do anything in a union FS.
 # Changes are lost on a subsequent run.
@@ -61,7 +65,6 @@ ln -s /usr/lib/python2.7/site-packages/boto \
 google-cloud-sdk/bin/gcloud meta list-gcloud --format=json | gzip > /google-cloud-sdk/gcloud_tree.json.gz
 mv /gcloud_tree.py /google-cloud-sdk/lib/googlecloudsdk/command_lib/gcloud_tree.py
 
-# Clean up unneeded data
-apk del alpine-sdk libffi-dev openssl-dev mtools mkinitfs kmod squashfs-tools git g++ gcc make musl-dev libc-dev python-dev linux-headers
+apk del ${DEVEL_PACKAGES}
 rm -rfv ~/.cache
 rm -rfv /var/cache/apk/*
