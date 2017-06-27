@@ -15,6 +15,17 @@ podTemplate(label: 'k2-tools', containers: [
                 kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest .'
                 echo 'docker build test'
             }
+
+            stage('docker build') {
+                kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest /'
+                echo 'docker build test'
+            }
+
+            stage('docker build') {
+                kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest /docker'
+                echo 'docker build test'
+            }
+
             //only push from master.   assume we are on samsung-cnct fork
             //  ToDo:  check for correct fork
             stage('docker push') {
