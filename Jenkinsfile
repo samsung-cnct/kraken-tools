@@ -12,7 +12,7 @@ podTemplate(label: 'k2-tools', containers: [
         customContainer('docker') {
             // add a docker rmi/docker purge/etc.
             stage('docker build') {
-                kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest'
+                kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest .'
                 echo 'docker build test'
             }
             //only push from master.   assume we are on samsung-cnct fork
