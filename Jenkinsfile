@@ -18,18 +18,16 @@ podTemplate(label: 'k2-tools', containers: [
 
             stage('docker build') {
                 kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest .'
-                kubesh 'docker images'
-            }
-
-            stage('checkout  k2') {
-                kubesh 'git clone --branch master 1 https://github.com/samsung-cnct/k2.git /kraken'
             }
 
             stage('mount  k2 path on k2-tools container') {
-              kubesh 'docker run -v ${env.WORKSPACE}/kraken:/kraken --rm -it quay.io/samsung_cnct/k2-tools:latest  "/bin/sh"'
-              kubesh '/kraken/build-scripts/fetch-credentials.sh'
-            }
-
+              kubesh 'docker run  --rm -it quay.io/samsung_cnct/k2-tools:latest  "/apk update && apk add git && \
+              ~/git clone --branch master --depth 1 https://github.com/samsung-cnct/k2.git /kraken && \
+              /kraken/build-scripts/fetch-credentials.sh && \
+              /kraken/up.sh --generate cluster/aws/config.yaml && \
+              /kraken/build-scripts/update-generated-config.sh cluster/aws/config.yaml ${env.JOB_BASE_NAME}-${env.BUILD_ID} && \
+              PWD=`pwd` && ./up.sh --config $PWD/cluster/aws/config.yaml --output $PWD/cluster/aws/ -t dryrun"'
+              }
 
             // only push from master.   assume we are on samsung-cnct fork
             //  ToDo:  check for correct fork
