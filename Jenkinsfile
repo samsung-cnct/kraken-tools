@@ -21,6 +21,14 @@ podTemplate(label: 'k2-tools', containers: [
                 echo 'docker build test'
             }
 
+
+            stage('get inside of docker.') {
+              kubesh 'docker run --rm -it quay.io/samsung_cnct/k2-tools:latest  "/bin/sh"'
+              sh "pwd"
+              sh "whoami"
+              sh "git clone git@github.com:samsung-cnct/k2.git"
+            }
+
             //only push from master.   assume we are on samsung-cnct fork
             //  ToDo:  check for correct fork
             stage('docker push') {
@@ -31,6 +39,7 @@ podTemplate(label: 'k2-tools', containers: [
                 }
             }
         }
+
     }
   }
 
