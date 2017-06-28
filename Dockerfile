@@ -32,6 +32,7 @@ ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
 
 ENV     HELM_HOME=/etc/helm
+ENV     HELM_PLUGIN=/etc/helm/plugins
 
 # Prepping Alpine
 
@@ -88,7 +89,7 @@ RUN     sed -i -- 's/\"disable_updater\": false/\"disable_updater\": true/g' /go
 RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin \
                  /opt/cnct/kubernetes/v1.5/bin \
                  /opt/cnct/kubernetes/v1.6/bin \
-                 /etc/helm/plugins/cnr && \
+                 /etc/helm/plugins/appr && \
         ln -s /opt/cnct/kubernetes/$LATEST /opt/cnct/kubernetes/latest
 
 # Kubectl
@@ -124,7 +125,8 @@ ADD     imagerun.sh /imagerun.sh
 ADD     gcloud_tree.py /gcloud_tree.py
 
 RUN     /imagerun.sh
-RUN     ln -s /usr/lib/python2.7/site-packages/cnrclient/commands/plugins/helm/cnr.sh \
-            /usr/lib/python2.7/site-packages/cnrclient/commands/plugins/helm/plugin.yaml \
-            /usr/bin/cnr \
-            /etc/helm/plugins/cnr
+RUN     ln -s /usr/lib/python2.7/site-packages/appr/commands/plugins/helm/cnr.sh \
+            /etc/helm/plugins/appr/appr.sh     
+RUN     ln -s /usr/lib/python2.7/site-packages/appr/commands/plugins/helm/plugin.yaml \
+            /usr/bin/appr \
+            /etc/helm/plugins/appr/
