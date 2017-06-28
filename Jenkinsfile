@@ -18,18 +18,20 @@ podTemplate(label: 'k2-tools', containers: [
 
             stage('docker build') {
                 kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest .'
-                echo 'docker build test'
+                kubesh 'docker images'
+            }
+
+            stage('checkout  k2') {
+                kubesh 'git clone --branch master 1 https://github.com/samsung-cnct/k2.git /kraken'
+            }
+
+            stage('mount  k2 path on k2-tools container') {
+              kubesh 'docker run -v ${env.WORKSPACE}/kraken:/kraken --rm -it quay.io/samsung_cnct/k2-tools:latest  "/bin/sh"'
+              kubesh '/kraken/build-scripts/fetch-credentials.sh'
             }
 
 
-            stage('get inside of docker.') {
-              kubesh 'docker run --rm -i quay.io/samsung_cnct/k2-tools:latest  "/bin/sh"'
-              sh "pwd"
-              sh "whoami"
-              sh "git clone git@github.com:samsung-cnct/k2.git"
-            }
-
-            //only push from master.   assume we are on samsung-cnct fork
+            // only push from master.   assume we are on samsung-cnct fork
             //  ToDo:  check for correct fork
             stage('docker push') {
                 if (env.BRANCH_NAME == "master") {
@@ -58,6 +60,10 @@ def kubesh(command) {
 
 def kubectl(command) {
   "kubectl exec -i ${env.HOSTNAME} -c ${env.CONTAINER_NAME} -- /bin/sh -c 'cd ${env.WORKSPACE} && ${command}'"
+}
+
+def dockerctl(command) {
+  ""
 }
 
 def customContainer(String name, Closure body) {
