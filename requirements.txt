@@ -26,3 +26,5 @@ rsa==3.4.2
 semver==2.7.7
 s3transfer==0.1.10
 six==1.10.0
+
+https://github.com/app-registry/appr/archive/v0.5.0.tar.gz
