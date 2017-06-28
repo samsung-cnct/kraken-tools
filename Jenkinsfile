@@ -23,7 +23,7 @@ podTemplate(label: 'k2-tools', containers: [
 
 
             stage('get inside of docker.') {
-              kubesh 'docker run --rm -it quay.io/samsung_cnct/k2-tools:latest  "/bin/sh"'
+              kubesh 'docker run --rm -i quay.io/samsung_cnct/k2-tools:latest  "/bin/sh"'
               sh "pwd"
               sh "whoami"
               sh "git clone git@github.com:samsung-cnct/k2.git"
