@@ -21,7 +21,7 @@ podTemplate(label: 'k2-tools', containers: [
             }
 
             stage('mount  k2 path on k2-tools container') {
-              kubesh 'docker run  --rm -it quay.io/samsung_cnct/k2-tools:latest  "/apk update && apk add git && \
+              kubesh 'docker run  --rm -it quay.io/samsung_cnct/k2-tools:latest  "apk update && apk add git && \
               ~/git clone --branch master --depth 1 https://github.com/samsung-cnct/k2.git /kraken && \
               /kraken/build-scripts/fetch-credentials.sh && \
               /kraken/up.sh --generate cluster/aws/config.yaml && \
