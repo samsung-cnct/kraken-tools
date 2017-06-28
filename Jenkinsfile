@@ -13,12 +13,7 @@ podTemplate(label: 'k2-tools', containers: [
             // add a docker rmi/docker purge/etc.
 
             stage('docker build') {
-                kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest /'
-                echo 'docker build test'
-            }
-
-            stage('docker build') {
-                kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest /docker'
+                kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest Dockerfile'
                 echo 'docker build test'
             }
 
