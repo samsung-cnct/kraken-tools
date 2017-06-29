@@ -21,7 +21,7 @@ podTemplate(label: 'k2-tools', containers: [
             }
             // test k2 dryrun using k2-tools image
             stage('Run k2 dryrun test through k2-tools image') {
-                kubesh "PWD=`pwd` && docker run --rm -i -v ${env.WORKSPACE}:/test/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest /bin/bash -c /test/k2-tools/k2dryrun.sh"
+                kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest /bin/bash -c /k2dryrun.sh"
             }
             // only push from master.   assume we are on samsung-cnct fork
             //  ToDo:  check for correct fork
