@@ -21,12 +21,12 @@ podTemplate(label: 'k2-tools', containers: [
             }
 
             stage('docker build') {
-                kubesh 'PWD="pwd"'
-                echo PWD
+                kubesh 'PWD=`pwd`'
+                echo $PWD
             }
 
             stage('Run k2 dryrun test through k2-tools image') {
-                kubesh "docker run --name k2tools --rm -i -v ./:/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest '/bin/bash' 'k2-tools/k2dryrun.sh'"
+                kubesh "docker run --name k2tools --rm -i -v $PWD:/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest '/bin/bash' 'k2-tools/k2dryrun.sh'"
             }
             // only push from master.   assume we are on samsung-cnct fork
             //  ToDo:  check for correct fork
