@@ -21,15 +21,7 @@ podTemplate(label: 'k2-tools', containers: [
             }
 
             stage('Run k2 dryrun test through k2-tools image') {
-                kubesh "PWD=`pwd` && docker run --rm -i -v ${env.WORKSPACE}:/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest 'ls -al'"
-            }
-
-            stage('Run k2 dryrun test through k2-tools image') {
-                kubesh "PWD=`pwd` && docker run --rm -i -v ${env.WORKSPACE}:/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest 'pwd'"
-            }
-
-            stage('Run k2 dryrun test through k2-tools image') {
-                kubesh "PWD=`pwd` && docker run --rm -i -v ${env.WORKSPACE}:/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest 'ls k2-tools/'"
+                kubesh "PWD=`pwd` && docker run --rm -i -v ${env.WORKSPACE}:/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest 'ls -al && cd k2-tools && ls -al'"
             }
 
             stage('Run k2 dryrun test through k2-tools image') {
