@@ -123,7 +123,7 @@ RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSI
 ADD     requirements.txt /requirements.txt
 ADD     imagerun.sh /imagerun.sh
 ADD     gcloud_tree.py /gcloud_tree.py
-
+ADD     k2dryrun.sh /k2dryrun.sh
 RUN     /imagerun.sh
 RUN     ln -s /usr/lib/python2.7/site-packages/appr/commands/plugins/helm/cnr.sh \
             /etc/helm/plugins/appr/appr.sh     
