@@ -20,6 +20,11 @@ podTemplate(label: 'k2-tools', containers: [
                 kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest .'
             }
 
+            stage('docker build') {
+                kubesh 'PWD="pwd"'
+                echo PWD
+            }
+
             stage('Run k2 dryrun test through k2-tools image') {
                 kubesh "docker run --name k2tools --rm -i -v ./:/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest '/bin/bash' 'k2-tools/k2dryrun.sh'"
             }
