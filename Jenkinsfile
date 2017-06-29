@@ -20,12 +20,16 @@ podTemplate(label: 'k2-tools', containers: [
                 kubesh 'docker build -t quay.io/samsung_cnct/k2-tools:latest .'
             }
 
-            stage('Run k2 dryrun test through k2-tools image') {
-                kubesh "PWD=`pwd` && docker run --rm -i -v ${env.WORKSPACE}:/toolscode -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest 'ls -al && cd toolscode && ls -al'"
+            stage('docker build') {
+                kubesh 'ls -al'
             }
 
             stage('Run k2 dryrun test through k2-tools image') {
-                kubesh "PWD=`pwd` && docker run --rm -i -v ${env.WORKSPACE}:/toolscode -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest '/bin/bash' './toolscode/k2dryrun.sh'"
+                kubesh "PWD=`pwd` && docker run --rm -i -v ${env.WORKSPACE}:/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest 'ls -al'"
+            }
+
+            stage('Run k2 dryrun test through k2-tools image') {
+                kubesh "PWD=`pwd` && docker run --rm -i -v ${env.WORKSPACE}:/k2-tools -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest '/bin/bash' './k2-tools/k2dryrun.sh'"
             }
             // only push from master.   assume we are on samsung-cnct fork
             //  ToDo:  check for correct fork
