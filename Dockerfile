@@ -12,6 +12,8 @@ ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
         # google cloud kubectl is superceeded by downloaded kubectl
 ENV     PATH $PATH:/google-cloud-sdk/bin
 
+ENV     ETCD_VERSION=v3.2.1
+
 ENV     K8S_VERSION=v1.6.6
 ENV     K8S_HELM_VERSION=v2.5.0
 
@@ -83,6 +85,12 @@ RUN     google-cloud-sdk/bin/gcloud config set --installation component_manager/
         # Running `gcloud components update` doesn't really do anything in a union FS.
         # Changes are lost on a subsequent run.
 RUN     sed -i -- 's/\"disable_updater\": false/\"disable_updater\": true/g' /google-cloud-sdk/lib/googlecloudsdk/core/config.json
+
+# Etcd
+RUN     wget https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
+        tar -zxvf etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
+        cp etcd-${ETCD_VERSION}-linux-amd64/etcdctl /usr/local/bin && \
+        rm -rf etcd-${ETCD_VERSION}-linux-amd64/
 
 # Kubernetes
     # Creating path for helm and kubectl executables
