@@ -135,6 +135,6 @@ RUN     ln -s /usr/lib/python2.7/site-packages/appr/commands/plugins/helm/plugin
 # Crash application
 RUN     wget https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
         tar -zxvf k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
-        mkdir k2-crash-app && \
-        mv k2-crash-application /k2-crash-app/k2-crash-application && \
+        mkdir /usr/bin/k2-crash-app && \
+        mv k2-crash-application /usr/bin/k2-crash-app/k2-crash-application && \
         rm -rf k2-crash-application_0.1.0_linux_amd64.tar.gz
