@@ -97,7 +97,7 @@ RUN     wget https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/e
 RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin \
                  /opt/cnct/kubernetes/v1.5/bin \
                  /opt/cnct/kubernetes/v1.6/bin \
-                 /etc/helm/plugins/appr && \
+                 /etc/helm/plugins && \
         ln -s /opt/cnct/kubernetes/$LATEST /opt/cnct/kubernetes/latest
 
 # Kubectl
@@ -134,11 +134,7 @@ ADD     gcloud_tree.py /gcloud_tree.py
 ADD     k2dryrun.sh /k2dryrun.sh
 
 RUN     /imagerun.sh
-RUN     ln -s /usr/lib/python2.7/site-packages/appr/commands/plugins/helm/cnr.sh \
-            /etc/helm/plugins/appr/appr.sh     
-RUN     ln -s /usr/lib/python2.7/site-packages/appr/commands/plugins/helm/plugin.yaml \
-            /usr/bin/appr \
-            /etc/helm/plugins/appr/
+RUN     appr plugins install helm && rm /etc/helm/plugins/*.gz
 
 # Crash application
 RUN     wget https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
