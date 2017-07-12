@@ -7,7 +7,8 @@ ENV     TF_DISTROIMAGE_VERSION=v0.0.1
 ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.4
 
 ENV     GCLOUD_SDK_VERSION=128.0.0
-ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
+ENV     GCLOUD_FILE_NAME=google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
+ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_FILE_NAME}
 ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
         # google cloud kubectl is superceeded by downloaded kubectl
 ENV     PATH $PATH:/google-cloud-sdk/bin
@@ -71,9 +72,9 @@ RUN 	wget https://github.com/samsung-cnct/terraform-provider-distroimage/release
 RUN     pip install awscli
 
 # Google cloud work
-RUN     wget https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.zip && \
-        unzip google-cloud-sdk.zip && \
-        rm google-cloud-sdk.zip
+RUN     wget ${GCLOUD_SDK_URL} && \
+        tar -xf ${GCLOUD_FILE_NAME} && \
+        rm ${GCLOUD_FILE_NAME}
 RUN     google-cloud-sdk/install.sh --usage-reporting=false --path-update=false --bash-completion=false
 
 
