@@ -98,19 +98,19 @@ RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin \
                  /opt/cnct/kubernetes/v1.5/bin \
                  /opt/cnct/kubernetes/v1.6/bin \
                  /etc/helm/plugins && \
-        ln -s /opt/cnct/kubernetes/$LATEST /opt/cnct/kubernetes/latest
+        ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest
 
 # Kubectl
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_4}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.4/bin && \
-        ln -s /opt/cnct/kubernetes/v1.4/bin/kubectl /usr/bin/
+        mv kubectl /opt/cnct/kubernetes/v1.4/bin
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.5/bin
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.6/bin
+        mv kubectl /opt/cnct/kubernetes/v1.6/bin && \
+        ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/
 
 # Helm
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz  && \
