@@ -98,19 +98,19 @@ RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin \
                  /opt/cnct/kubernetes/v1.5/bin \
                  /opt/cnct/kubernetes/v1.6/bin \
                  /etc/helm/plugins && \
-        ln -s /opt/cnct/kubernetes/$LATEST /opt/cnct/kubernetes/latest
+        ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest
 
 # Kubectl
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_4}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.4/bin && \
-        ln -s /opt/cnct/kubernetes/v1.4/bin/kubectl /usr/bin/
+        mv kubectl /opt/cnct/kubernetes/v1.4/bin
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.5/bin
 RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.6/bin
+        mv kubectl /opt/cnct/kubernetes/v1.6/bin && \
+        ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/
 
 # Helm
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz  && \
@@ -120,12 +120,12 @@ RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSI
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
         tar -zxvf helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.5/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz && \
-        ln -s /opt/cnct/kubernetes/v1.5/bin/helm /usr/bin/
+        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz
 RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
         tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz
+        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && \
+        ln -s /opt/cnct/kubernetes/${LATEST}/bin/helm /usr/bin/
 
 # Python / ansible addon work
 ADD     requirements.txt /requirements.txt
