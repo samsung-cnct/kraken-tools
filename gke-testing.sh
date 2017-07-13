@@ -10,6 +10,7 @@ build-scripts/fetch-credentials.sh
 
 
 echo "prep complete, create config"
+mkdir -p cluster/gke
 cp ansible/roles/kraken.config/files/gke-config.yaml cluster/gke/config.yaml
 
 echo "modify config in-place"
