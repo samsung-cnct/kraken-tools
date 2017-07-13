@@ -18,18 +18,16 @@ podTemplate(label: 'k2-tools', containers: [
             }
             
             parallel (
-              aws: {
+              aws:
                 // test aws (Dryrun, up, down) using k2-tools image
                 stage('Run aws tests through k2-tools image') {
                     kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest /bin/bash -c /aws-testing.sh"
                 }
-              },
-              gke: {
+              gke: 
                 // test gke (up, down) using k2-tools image
                 stage('Run gke tests through k2-tools image') {
                     kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest /bin/bash -c /gke-testing.sh"
                 }
-              }
             )
 
             // only push from master.   assume we are on samsung-cnct fork
