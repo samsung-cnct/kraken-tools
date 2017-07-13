@@ -71,22 +71,6 @@ RUN 	wget https://github.com/samsung-cnct/terraform-provider-distroimage/release
         # Adding AWS CLI
 RUN     pip install awscli
 
-# Google cloud work
-RUN     wget ${GCLOUD_SDK_URL} && \
-        tar -xf ${GCLOUD_FILE_NAME} && \
-        rm ${GCLOUD_FILE_NAME}
-RUN     google-cloud-sdk/install.sh --usage-reporting=false --path-update=false --bash-completion=false
-
-
-        # Disable updater check for the whole installation.
-        # Users won't be bugged with notifications to update to the latest version of gcloud.
-RUN     google-cloud-sdk/bin/gcloud config set --installation component_manager/disable_update_check true
-
-        # Disable updater completely.
-        # Running `gcloud components update` doesn't really do anything in a union FS.
-        # Changes are lost on a subsequent run.
-RUN     sed -i -- 's/\"disable_updater\": false/\"disable_updater\": true/g' /google-cloud-sdk/lib/googlecloudsdk/core/config.json
-
 # Etcd
 RUN     wget https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
         tar -zxvf etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
@@ -132,9 +116,22 @@ RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSI
 ADD     requirements.txt /requirements.txt
 ADD     imagerun.sh /imagerun.sh
 ADD     gcloud_tree.py /gcloud_tree.py
-ADD     k2dryrun.sh /k2dryrun.sh
+ADD     aws-testing.sh /aws-testing.sh
+ADD     gke-testing.sh /gke-testing.sh
 
+# Run imagerun.sh to install things that need compilers, etc
 RUN     /imagerun.sh
+
+# Google cloud work (copied from https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/master/alpine/Dockerfile )
+RUN wget ${GCLOUD_SDK_URL} && \
+    tar xzf ${GCLOUD_FILE_NAME} && \
+    rm ${GCLOUD_FILE_NAME} && \
+    ln -s /lib /lib64 && \
+    gcloud config set core/disable_usage_reporting true && \
+    gcloud config set component_manager/disable_update_check true && \
+    gcloud config set metrics/environment github_docker_image
+
+# Install the help app registry plugin
 RUN     appr plugins install helm && rm /etc/helm/plugins/*.gz
 
 # Crash application
