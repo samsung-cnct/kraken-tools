@@ -5,22 +5,22 @@ set -o pipefail
 # Adding baseline alpine packages
 apk update 
 apk add --no-cache  \
-    libffi-dev \
-    openssl \
-    openssl-dev \
-    ca-certificates \
-    python \
     bash \
-    py-pip \
-    py-cffi \
-    py-cryptography \
-    unzip \
-    zip \
-    python-dev \
+    ca-certificates \
+    g++ \
     gcc \
+    libffi-dev \
     linux-headers \
     musl-dev \
-    g++
+    openssl \
+    openssl-dev \
+    py-cffi \
+    py-cryptography \
+    py-pip \
+    python \
+    python-dev \
+    unzip \
+    zip
 
 # Python / ansible addon work
 # update pip
@@ -29,6 +29,21 @@ pip install --upgrade pip
 pip install -r /requirements.txt
 
 # Clean up unneeded data
-apk del alpine-sdk libffi-dev openssl-dev mtools mkinitfs kmod squashfs-tools git g++ gcc make musl-dev libc-dev python-dev linux-headers
+apk del \
+    alpine-sdk \
+    g++ \
+    gcc \
+    git \
+    kmod \
+    libc-dev \
+    libffi-dev \
+    linux-headers \
+    make \
+    mkinitfs \
+    mtools \
+    musl-dev \
+    openssl-dev \
+    python-dev \
+    squashfs-tools
 rm -rfv ~/.cache
 rm -rfv /var/cache/apk/*
