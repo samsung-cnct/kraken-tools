@@ -37,7 +37,7 @@ pip install -r /requirements.txt
 #fi
 
 # Clean up unneeded data
-apk del -vv \
+apk del \
     alpine-sdk \
     g++ \
     gcc \
@@ -45,7 +45,7 @@ apk del -vv \
     kmod \
     libc-dev \
     libffi-dev \
-    linux-headers
+    linux-headers \
     make \
     mkinitfs \
     mtools \
