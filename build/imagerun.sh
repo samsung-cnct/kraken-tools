@@ -28,14 +28,6 @@ pip install --upgrade pip
 # install all python packages
 pip install -r /requirements.txt
 
-### WORKAROUND
-# This works around a bad cffi package in Alpine 3.6.2
-# remove after alpine upgrade fixes this
-#source /etc/os-release
-#if [[ "$ID" == "alpine" && "$VERSION_ID" == "3.6.2" ]]; then
-#    pip install -U cffi
-#fi
-
 # Clean up unneeded data
 apk del \
     alpine-sdk \
