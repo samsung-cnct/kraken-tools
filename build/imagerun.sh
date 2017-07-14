@@ -37,7 +37,7 @@ pip install -r /requirements.txt
 #fi
 
 # Clean up unneeded data
-apk del --no-scripts \
+apk del -vv \
     alpine-sdk \
     g++ \
     gcc \
