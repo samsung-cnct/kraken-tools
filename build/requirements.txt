@@ -18,7 +18,7 @@ MarkupSafe==0.23
 netaddr==0.7.18
 paramiko==1.16.0
 pyasn1==0.1.9
-pycparser==2.10
+pycparser==2.18
 pycrypto==2.6.1
 python-dateutil==2.6.0
 PyYAML==3.11
