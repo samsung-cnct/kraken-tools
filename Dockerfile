@@ -42,11 +42,8 @@ ENV     HELM_PLUGIN=/etc/helm/plugins
 ADD     build/alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
-RUN     apk update && apk add libffi-dev openssl-dev python bash wget py-pip py-cffi py-cryptography unzip zip make git && \
-    	/alpine-builds/build-docker.sh && rm -rf /alpine-builds &&  rm -rfv /var/cache/apk/*
-
-# wget
-RUN     apk update && apk add ca-certificates wget &&  rm -rfv /var/cache/apk/*
+RUN     apk update && apk add bash ca-certificates g++ gcc git libffi-dev linux-headers make musl-dev openssl openssl-dev python python-dev py-cryptography py-cffi py-pip unzip wget zip  && \
+    	/alpine-builds/build-docker.sh && rm -rf /alpine-builds && rm -rfv /var/cache/apk/*
 
 # Terraform
 
@@ -114,13 +111,12 @@ RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSI
 
 # Python / ansible addon work
 ADD     build/requirements.txt /requirements.txt
-ADD     build/imagerun.sh /imagerun.sh
 ADD     build/gcloud_tree.py /gcloud_tree.py
 ADD     tests/aws-testing.sh /aws-testing.sh
 ADD     tests/gke-testing.sh /gke-testing.sh
 
-# Run imagerun.sh to install things that need compilers, etc
-RUN     /imagerun.sh
+# Install things that need compilers, etc
+RUN     pip install -r /requirements.txt
 
 # Google cloud work (copied from https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/master/alpine/Dockerfile )
 RUN wget ${GCLOUD_SDK_URL} && \
