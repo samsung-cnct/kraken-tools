@@ -5,22 +5,12 @@ set -o pipefail
 # Adding baseline alpine packages
 apk update 
 apk add --no-cache  \
-    bash \
-    ca-certificates \
     g++ \
     gcc \
-    libffi-dev \
     linux-headers \
     musl-dev \
     openssl \
-    openssl-dev \
-    py-cffi \
-    py-cryptography \
-    py-pip \
-    python \
-    python-dev \
-    unzip \
-    zip
+    python-dev 
 
 # Python / ansible addon work
 # update pip
