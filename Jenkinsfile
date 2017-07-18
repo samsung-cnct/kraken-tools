@@ -31,14 +31,13 @@ podTemplate(label: 'k2-tools', containers: [
             }
 
             // only push from master.   assume we are on samsung-cnct fork
-            //  ToDo:  check for correct fork
-            if (env.BRANCH_NAME == "master") {
-                stage('Release') {
-                        kubesh 'docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest'
-                        kubesh 'docker push quay.io/samsung_cnct/k2-tools:latest'
-                } 
-            } else {
+            stage('Publish') {
+              if (env.BRANCH_NAME == "master" && env.GIT_URL ==~ "/samsung_cnct/") {
+                kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest"
+                kubesh "docker push quay.io/samsung_cnct/k2-tools:latest"
+              } else {
                 echo 'not master branch, not pushing to docker repo'
+              }
             }
         }
 
