@@ -43,7 +43,7 @@ ADD     build/alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
 RUN     apk update && apk add bash ca-certificates g++ gcc git libffi-dev linux-headers make musl-dev openssl openssl-dev python python-dev py-cryptography py-cffi py-pip unzip wget zip  && \
-    	/alpine-builds/build-docker.sh && rm -rf /alpine-builds && rm -rfv /var/cache/apk/*
+    	/alpine-builds/build-docker.sh && rm -rf /alpine-builds 
 
 # Terraform
 
@@ -64,11 +64,7 @@ RUN 	wget https://github.com/samsung-cnct/terraform-provider-distroimage/release
 	    tar -zxvf terraform-provider-distroimage_linux_amd64.tar.gz && rm terraform-provider-distroimage_linux_amd64.tar.gz && mv terraform-provider-distro /usr/bin/
 
 # AWS work
-
-        # Adding AWS CLI
-RUN     pip install awscli
-
-# Etcd
+        # Etcd
 RUN     wget https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
         tar -zxvf etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
         cp etcd-${ETCD_VERSION}-linux-amd64/etcdctl /usr/local/bin && \
@@ -117,6 +113,11 @@ ADD     tests/gke-testing.sh /gke-testing.sh
 
 # Install things that need compilers, etc
 RUN     pip install -r /requirements.txt
+
+# delete build-related packages
+RUN     apk del alpine-sdk g++ gcc git kmod libc-dev libffi-dev linux-headers make mkinitfs mtools musl-dev openssl-dev python-dev squashfs-tools && \ 
+        rm -rfv ~/.cache && \ 
+        rm -rfv /var/cache/apk/*
 
 # Google cloud work (copied from https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/master/alpine/Dockerfile )
 RUN wget ${GCLOUD_SDK_URL} && \
