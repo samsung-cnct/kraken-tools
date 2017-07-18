@@ -42,7 +42,7 @@ ENV     HELM_PLUGIN=/etc/helm/plugins
 ADD     build/alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
-RUN     apk update && apk add bash ca-certificates g++ gcc git libffi-dev linux-headers make musl-dev openssl openssl-dev python python-dev py-cryptography py-cffi py-pip unzip wget zip  && \
+RUN     apk add --update --no-cache bash ca-certificates g++ gcc git libffi-dev linux-headers make musl-dev openssl openssl-dev python python-dev py-cryptography py-cffi py-pip unzip wget zip  && \
     	/alpine-builds/build-docker.sh && rm -rf /alpine-builds 
 
 # Terraform
@@ -115,7 +115,7 @@ ADD     tests/gke-testing.sh /gke-testing.sh
 RUN     pip install -r /requirements.txt
 
 # delete build-related packages
-RUN     apk del alpine-sdk g++ gcc git kmod libc-dev libffi-dev linux-headers make mkinitfs mtools musl-dev openssl-dev python-dev squashfs-tools && \ 
+RUN     apk del g++ gcc git kmod libc-dev libffi-dev linux-headers make mkinitfs mtools musl-dev openssl-dev python-dev squashfs-tools && \ 
         rm -rfv ~/.cache && \ 
         rm -rfv /var/cache/apk/*
 
