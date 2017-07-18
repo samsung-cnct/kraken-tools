@@ -15,21 +15,22 @@ ENV     PATH $PATH:/google-cloud-sdk/bin
 
 ENV     ETCD_VERSION=v3.1.0
 
-ENV     K8S_VERSION=v1.6.7
-ENV     K8S_HELM_VERSION=v2.5.0
+ENV     K8S_VERSION=v1.7.1
+ENV     K8S_HELM_VERSION=v2.5.1
 
-ENV     K8S_VERSION_1_4=v1.4.12
 ENV     K8S_VERSION_1_5=v1.5.7
 ENV     K8S_VERSION_1_6=v1.6.7
+ENV     K8S_VERSION_1_7=v1.7.1
 
-ENV     K8S_HELM_VERSION_1_4=v2.1.3
+
 ENV     K8S_HELM_VERSION_1_5=v2.3.1
 ENV     K8S_HELM_VERSION_1_6=v2.5.0
+ENV     K8S_HELM_VERSION_1_7=v2.5.1
 
-# Latest version of tools
-ENV     LATEST=v1.6
-ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_6
-ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_6
+#Latest version of tools
+ENV     LATEST=v1.7
+ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_7
+ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_7
 
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
@@ -79,29 +80,24 @@ RUN     wget -q https://github.com/coreos/etcd/releases/download//${ETCD_VERSION
         rm -rf etcd-${ETCD_VERSION}-linux-amd64/
 
 # Creating path for helm and kubectl executables
-RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin \
+RUN     mkdir -p /opt/cnct/kubernetes/v1.7/bin \
                  /opt/cnct/kubernetes/v1.5/bin \
                  /opt/cnct/kubernetes/v1.6/bin \
-                 /etc/helm/plugins && \
-        ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest
+                 /etc/helm/plugins
 
 # Kubectl
-RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_4}/bin/linux/amd64/kubectl && \
-        chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.4/bin
 RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.5/bin
 RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.6/bin && \
-        ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/
+        mv kubectl /opt/cnct/kubernetes/v1.6/bin
+RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_7}/bin/linux/amd64/kubectl && \
+        chmod a+x kubectl && \
+        mv kubectl /opt/cnct/kubernetes/v1.7/bin
+       
 
 # Helm
-RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz  && \
-        tar -zxvf helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz  && \
-        mv linux-amd64/helm /opt/cnct/kubernetes/v1.4/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz
 RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
         tar -zxvf helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.5/bin/helm  && \
@@ -109,8 +105,16 @@ RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VE
 RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
         tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && \
-        ln -s /opt/cnct/kubernetes/${LATEST}/bin/helm /usr/bin/
+        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz
+RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
+        tar -zxvf helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
+        mv linux-amd64/helm /opt/cnct/kubernetes/v1.7/bin/helm  && \
+        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz
+
+RUN ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest && \
+         ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/ && \
+         ln -s /opt/cnct/kubernetes/${LATEST}/bin/helm /usr/bin/
+
 
 # Python (including ansible)
 ADD     build/requirements.txt /requirements.txt
