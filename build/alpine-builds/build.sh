@@ -15,6 +15,3 @@ su -c 'cd /alpine-builds/ansible && abuild checksum && abuild -r' samsung
 # Let's install what we build
 apk add /home/samsung/packages/alpine-builds/x86_64/*.apk
 
-# Clean up
-apk del alpine-sdk
-
