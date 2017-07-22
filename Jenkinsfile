@@ -32,7 +32,7 @@ podTemplate(label: 'k2-tools', containers: [
 
             // only push from master.   assume we are on samsung-cnct fork
             stage('Publish') {
-              if (env.BRANCH_NAME == "master" && env.GIT_URL ==~ "/samsung_cnct/") {
+              if (env.BRANCH_NAME == "master" && env.CHANGE_URL ==~ "/samsung_cnct/") {
                 kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest"
                 kubesh "docker push quay.io/samsung_cnct/k2-tools:latest"
               } else {
