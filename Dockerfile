@@ -42,7 +42,7 @@ ENV     HELM_PLUGIN=/etc/helm/plugins
 ADD     build/alpine-builds /alpine-builds
 
         # Adding baseline alpine packages
-RUN     apk add --update --no-cache bash ca-certificates g++ gcc git libffi-dev linux-headers make musl-dev openssl openssl-dev python python-dev py-cryptography py-cffi py-pip unzip wget zip  && \
+RUN     apk add --update --no-cache bash ca-certificates g++ gcc git libffi-dev linux-headers make musl-dev openssl openssl-dev openssh python python-dev py-cryptography py-cffi py-pip unzip wget zip  && \
     	/alpine-builds/build-docker.sh && rm -rf /alpine-builds 
 
 # Terraform
