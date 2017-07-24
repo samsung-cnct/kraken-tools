@@ -15,21 +15,18 @@ ENV     PATH $PATH:/google-cloud-sdk/bin
 
 ENV     ETCD_VERSION=v3.1.0
 
-ENV     K8S_VERSION=v1.6.7
-ENV     K8S_HELM_VERSION=v2.5.0
+ENV     K8S_VERSION_OLDEST=v1.4.12
+ENV     K8S_VERSION_PRIOR=v1.5.7
+ENV     K8S_VERSION_LATEST=v1.6.7
 
-ENV     K8S_VERSION_1_4=v1.4.12
-ENV     K8S_VERSION_1_5=v1.5.7
-ENV     K8S_VERSION_1_6=v1.6.7
+ENV     HELM_VERSION_OLDEST=v2.1.3
+ENV     HELM_VERSION_PRIOR=v2.3.1
+ENV     HELM_VERSION_LATEST=v2.5.0
 
-ENV     K8S_HELM_VERSION_1_4=v2.1.3
-ENV     K8S_HELM_VERSION_1_5=v2.3.1
-ENV     K8S_HELM_VERSION_1_6=v2.5.0
-
-#Latest version of tools
-ENV     LATEST=v1.6
-ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_6
-ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_6
+        #versions of tools
+ENV     OLDEST_VERSION_SHORT=v1.4
+ENV     PRIOR_VERSION_SHORT=v1.5
+ENV     LATEST_VERSION_SHORT=v1.6
 
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
@@ -72,38 +69,38 @@ RUN     wget https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/e
 
 # Kubernetes
     # Creating path for helm and kubectl executables
-RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin \
-                 /opt/cnct/kubernetes/v1.5/bin \
-                 /opt/cnct/kubernetes/v1.6/bin \
+RUN     mkdir -p /opt/cnct/kubernetes/${OLDEST_VERSION_SHORT}/bin \
+                 /opt/cnct/kubernetes/${PRIOR_VERSION_SHORT}/bin \
+                 /opt/cnct/kubernetes/${LATEST_VERSION_SHORT}/bin \
                  /etc/helm/plugins && \
-        ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest
+        ln -s /opt/cnct/kubernetes/${LATEST_VERSION_SHORT} /opt/cnct/kubernetes/latest
 
 # Kubectl
-RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_4}/bin/linux/amd64/kubectl && \
+RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_OLDEST}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.4/bin
-RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && \
+        mv kubectl /opt/cnct/kubernetes/${OLDEST_VERSION_SHORT}/bin
+RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_PRIOR}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.5/bin
-RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && \
+        mv kubectl /opt/cnct/kubernetes/${PRIOR_VERSION_SHORT}/bin
+RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_LATEST}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.6/bin && \
-        ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/
+        mv kubectl /opt/cnct/kubernetes/${LATEST_VERSION_SHORT}/bin && \
+        ln -s /opt/cnct/kubernetes/${LATEST_VERSION_SHORT}/bin/kubectl /usr/bin/
 
 # Helm
-RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz  && \
-        tar -zxvf helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz  && \
-        mv linux-amd64/helm /opt/cnct/kubernetes/v1.4/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz
-RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
-        tar -zxvf helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
-        mv linux-amd64/helm /opt/cnct/kubernetes/v1.5/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz
-RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
-        tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
-        mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && \
-        ln -s /opt/cnct/kubernetes/${LATEST}/bin/helm /usr/bin/
+RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION_OLDEST}-linux-amd64.tar.gz  && \
+        tar -zxvf helm-${HELM_VERSION_OLDEST}-linux-amd64.tar.gz  && \
+        mv linux-amd64/helm /opt/cnct/kubernetes/${OLDEST_VERSION_SHORT}/bin/helm  && \
+        rm -rf linux-amd64 helm-${HELM_VERSION_OLDEST}-linux-amd64.tar.gz
+RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION_PRIOR}-linux-amd64.tar.gz  && \
+        tar -zxvf helm-${HELM_VERSION_PRIOR}-linux-amd64.tar.gz  && \
+        mv linux-amd64/helm /opt/cnct/kubernetes/${PRIOR_VERSION_SHORT}/bin/helm  && \
+        rm -rf linux-amd64 helm-${HELM_VERSION_PRIOR}-linux-amd64.tar.gz
+RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION_LATEST}-linux-amd64.tar.gz  && \
+        tar -zxvf helm-${HELM_VERSION_LATEST}-linux-amd64.tar.gz  && \
+        mv linux-amd64/helm /opt/cnct/kubernetes/${LATEST_VERSION_SHORT}/bin/helm  && \
+        rm -rf linux-amd64 helm-${HELM_VERSION_LATEST}-linux-amd64.tar.gz && \
+        ln -s /opt/cnct/kubernetes/${LATEST_VERSION_SHORT}/bin/helm /usr/bin/
 
 # Python / ansible addon work
 ADD     build/requirements.txt /requirements.txt
