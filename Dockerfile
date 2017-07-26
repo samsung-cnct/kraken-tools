@@ -49,31 +49,31 @@ RUN     apk add --update --no-cache ${APK_PACKAGES} ${APK_DEV_PACKAGES} && \
         rm -rf /alpine-builds 
 
 # Terraform
-RUN     wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-	unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+RUN     wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+        unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
         rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
         mv terraform /usr/bin/
 
 # Adding Terraform Provider Execute addon
-RUN     wget https://github.com/samsung-cnct/terraform-provider-execute/releases/download/${TF_PROVIDEREXECUTE_VERSION}/terraform-provider-execute_linux_amd64.tar.gz && \
+RUN     wget -q https://github.com/samsung-cnct/terraform-provider-execute/releases/download/${TF_PROVIDEREXECUTE_VERSION}/terraform-provider-execute_linux_amd64.tar.gz && \
         tar -zxvf terraform-provider-execute_linux_amd64.tar.gz && \
         rm terraform-provider-execute_linux_amd64.tar.gz && \
         mv terraform-provider-execute /usr/bin/
 
 # Adding Terraform CoreOS Box addon
-RUN 	wget https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
-	tar -zxvf terraform-provider-coreosbox_linux_amd64.tar.gz && \
+RUN 	wget -q https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
+        tar -zxvf terraform-provider-coreosbox_linux_amd64.tar.gz && \
         rm terraform-provider-coreosbox_linux_amd64.tar.gz && \
         mv terraform-provider-coreosbox /usr/bin/
 
 # Adding Terraform Distro Image Selector addon
-RUN 	wget https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
-	tar -zxvf terraform-provider-distroimage_linux_amd64.tar.gz && \
+RUN 	wget -q https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
+        tar -zxvf terraform-provider-distroimage_linux_amd64.tar.gz && \
         rm terraform-provider-distroimage_linux_amd64.tar.gz && \
         mv terraform-provider-distro /usr/bin/
 
 # Etcd
-RUN     wget https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
+RUN     wget -q https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
         tar -zxvf etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
         cp etcd-${ETCD_VERSION}-linux-amd64/etcdctl /usr/local/bin && \
         rm -rf etcd-${ETCD_VERSION}-linux-amd64/
@@ -86,27 +86,27 @@ RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin \
         ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest
 
 # Kubectl
-RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_4}/bin/linux/amd64/kubectl && \
+RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_4}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.4/bin
-RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && \
+RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.5/bin
-RUN     wget https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && \
+RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.6/bin && \
         ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/
 
 # Helm
-RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz  && \
+RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz  && \
         tar -zxvf helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.4/bin/helm  && \
         rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_4}-linux-amd64.tar.gz
-RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
+RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
         tar -zxvf helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.5/bin/helm  && \
         rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz
-RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
+RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
         tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm  && \
         rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && \
@@ -127,7 +127,7 @@ RUN     apk del ${APK_DEV_PACKAGES} && \
         rm -rfv /var/cache/apk/*
 
 # Google cloud work (copied from https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/master/alpine/Dockerfile )
-RUN     wget ${GCLOUD_SDK_URL} && \
+RUN     wget -q ${GCLOUD_SDK_URL} && \
         tar xzf ${GCLOUD_FILE_NAME} && \
         rm ${GCLOUD_FILE_NAME} && \
         ln -s /lib /lib64 && \
@@ -139,7 +139,7 @@ RUN     wget ${GCLOUD_SDK_URL} && \
 RUN     appr plugins install helm && rm /etc/helm/plugins/*.gz
 
 # Crash application
-RUN     wget https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
+RUN     wget -q https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
         tar -zxvf k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
         mv k2-crash-application /usr/bin/k2-crash-application && \
         rm -f k2-crash-application_0.1.0_linux_amd64.tar.gz
