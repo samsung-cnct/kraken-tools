@@ -10,7 +10,7 @@ ENV     GCLOUD_SDK_VERSION=162.0.0
 ENV     GCLOUD_FILE_NAME=google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
 ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_FILE_NAME}
 ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
-        # google cloud kubectl is superceeded by downloaded kubectl
+# google cloud kubectl is superceeded by downloaded kubectl
 ENV     PATH $PATH:/google-cloud-sdk/bin
 
 ENV     ETCD_VERSION=v3.1.0
@@ -26,7 +26,7 @@ ENV     K8S_HELM_VERSION_1_4=v2.1.3
 ENV     K8S_HELM_VERSION_1_5=v2.3.1
 ENV     K8S_HELM_VERSION_1_6=v2.5.0
 
-#Latest version of tools
+# Latest version of tools
 ENV     LATEST=v1.6
 ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_6
 ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_6
@@ -37,41 +37,46 @@ ENV     GO15VENDOREXPERIMENT 1
 ENV     HELM_HOME=/etc/helm
 ENV     HELM_PLUGIN=/etc/helm/plugins
 
-# Prepping Alpine
+# Alpine
 
 ADD     build/alpine-builds /alpine-builds
 
-        # Adding baseline alpine packages
-RUN     apk add --update --no-cache bash ca-certificates g++ gcc git libffi-dev linux-headers make musl-dev openssl openssl-dev openssh python python-dev py-cryptography py-cffi py-pip unzip wget zip  && \
-    	/alpine-builds/build-docker.sh && rm -rf /alpine-builds 
+ENV     APK_PACKAGES="bash ca-certificates openssl openssh python py-pip py-cryptography py-cffi zip unzip wget util-linux"
+ENV     APK_DEV_PACKAGES="gcc g++ gcc git make libffi-dev linux-headers musl-dev libc-dev openssl-dev python-dev unzip mkinitfs kmod mtools squashfs-tools"
+
+RUN     apk add --update --no-cache ${APK_PACKAGES} ${APK_DEV_PACKAGES} && \
+    	/alpine-builds/build-docker.sh && \
+        rm -rf /alpine-builds 
 
 # Terraform
-
-        #Installing Terraform binary
 RUN     wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-	    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && mv terraform /usr/bin/
+	unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+        mv terraform /usr/bin/
 
-	    # Adding Terraform Provider Execute addon
+# Adding Terraform Provider Execute addon
 RUN     wget https://github.com/samsung-cnct/terraform-provider-execute/releases/download/${TF_PROVIDEREXECUTE_VERSION}/terraform-provider-execute_linux_amd64.tar.gz && \
-        tar -zxvf terraform-provider-execute_linux_amd64.tar.gz && rm terraform-provider-execute_linux_amd64.tar.gz && mv terraform-provider-execute /usr/bin/
+        tar -zxvf terraform-provider-execute_linux_amd64.tar.gz && rm terraform-provider-execute_linux_amd64.tar.gz && \
+        mv terraform-provider-execute /usr/bin/
 
-	    # Adding Terraform CoreOS Box addon
+# Adding Terraform CoreOS Box addon
 RUN 	wget https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
-	    tar -zxvf terraform-provider-coreosbox_linux_amd64.tar.gz && rm terraform-provider-coreosbox_linux_amd64.tar.gz && mv terraform-provider-coreosbox /usr/bin/
+	tar -zxvf terraform-provider-coreosbox_linux_amd64.tar.gz && \
+        rm terraform-provider-coreosbox_linux_amd64.tar.gz && \
+        mv terraform-provider-coreosbox /usr/bin/
 
-	    # Adding Terraform Distro Image Selector addon
+# Adding Terraform Distro Image Selector addon
 RUN 	wget https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
-	    tar -zxvf terraform-provider-distroimage_linux_amd64.tar.gz && rm terraform-provider-distroimage_linux_amd64.tar.gz && mv terraform-provider-distro /usr/bin/
+	tar -zxvf terraform-provider-distroimage_linux_amd64.tar.gz && \
+        rm terraform-provider-distroimage_linux_amd64.tar.gz && \
+        mv terraform-provider-distro /usr/bin/
 
-# AWS work
-        # Etcd
+# Etcd
 RUN     wget https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
         tar -zxvf etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
         cp etcd-${ETCD_VERSION}-linux-amd64/etcdctl /usr/local/bin && \
         rm -rf etcd-${ETCD_VERSION}-linux-amd64/
 
-# Kubernetes
-    # Creating path for helm and kubectl executables
+# Creating path for helm and kubectl executables
 RUN     mkdir -p /opt/cnct/kubernetes/v1.4/bin \
                  /opt/cnct/kubernetes/v1.5/bin \
                  /opt/cnct/kubernetes/v1.6/bin \
@@ -105,7 +110,7 @@ RUN     wget http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSI
         rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz && \
         ln -s /opt/cnct/kubernetes/${LATEST}/bin/helm /usr/bin/
 
-# Python / ansible addon work
+# Python (including ansible)
 ADD     build/requirements.txt /requirements.txt
 ADD     build/gcloud_tree.py /gcloud_tree.py
 ADD     tests/aws-testing.sh /aws-testing.sh
@@ -114,8 +119,8 @@ ADD     tests/gke-testing.sh /gke-testing.sh
 # Install things that need compilers, etc
 RUN     pip install -r /requirements.txt
 
-# delete build-related packages
-RUN     apk del g++ gcc git kmod libc-dev libffi-dev linux-headers make mkinitfs mtools musl-dev openssl-dev python-dev squashfs-tools && \ 
+# Delete build-related packages
+RUN     apk del ${APK_DEV_PACKAGES} && \
         rm -rfv ~/.cache && \ 
         rm -rfv /var/cache/apk/*
 
@@ -132,7 +137,7 @@ RUN wget ${GCLOUD_SDK_URL} && \
 RUN     appr plugins install helm && rm /etc/helm/plugins/*.gz
 
 # Crash application
-RUN     wget https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
+RUN     wget https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
         tar -zxvf k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
         mv k2-crash-application /usr/bin/k2-crash-application && \
         rm -rf k2-crash-application_0.1.0_linux_amd64.tar.gz
