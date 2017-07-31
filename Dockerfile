@@ -143,3 +143,9 @@ RUN     wget -q https://github.com/samsung-cnct/k2-crash-application/releases/do
         tar -zxvf k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
         mv k2-crash-application /usr/bin/k2-crash-application && \
         rm -f k2-crash-application_0.1.0_linux_amd64.tar.gz
+
+
+# Quick verification script to confirm all expected binaries are present.
+ADD tests/internal_tooling.sh /internal_tooling_test.sh
+
+
