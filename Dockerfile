@@ -50,12 +50,14 @@ RUN     apk add --update --no-cache ${APK_PACKAGES} ${APK_DEV_PACKAGES} && \
 
 # Terraform
 RUN     wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-	unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+	unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+        rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
         mv terraform /usr/bin/
 
 # Adding Terraform Provider Execute addon
 RUN     wget https://github.com/samsung-cnct/terraform-provider-execute/releases/download/${TF_PROVIDEREXECUTE_VERSION}/terraform-provider-execute_linux_amd64.tar.gz && \
-        tar -zxvf terraform-provider-execute_linux_amd64.tar.gz && rm terraform-provider-execute_linux_amd64.tar.gz && \
+        tar -zxvf terraform-provider-execute_linux_amd64.tar.gz && \
+        rm terraform-provider-execute_linux_amd64.tar.gz && \
         mv terraform-provider-execute /usr/bin/
 
 # Adding Terraform CoreOS Box addon
@@ -125,13 +127,13 @@ RUN     apk del ${APK_DEV_PACKAGES} && \
         rm -rfv /var/cache/apk/*
 
 # Google cloud work (copied from https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/master/alpine/Dockerfile )
-RUN wget ${GCLOUD_SDK_URL} && \
-    tar xzf ${GCLOUD_FILE_NAME} && \
-    rm ${GCLOUD_FILE_NAME} && \
-    ln -s /lib /lib64 && \
-    gcloud config set core/disable_usage_reporting true && \
-    gcloud config set component_manager/disable_update_check true && \
-    gcloud config set metrics/environment github_docker_image
+RUN     wget ${GCLOUD_SDK_URL} && \
+        tar xzf ${GCLOUD_FILE_NAME} && \
+        rm ${GCLOUD_FILE_NAME} && \
+        ln -s /lib /lib64 && \
+        gcloud config set core/disable_usage_reporting true && \
+        gcloud config set component_manager/disable_update_check true && \
+        gcloud config set metrics/environment github_docker_image
 
 # Install the help app registry plugin
 RUN     appr plugins install helm && rm /etc/helm/plugins/*.gz
@@ -140,4 +142,4 @@ RUN     appr plugins install helm && rm /etc/helm/plugins/*.gz
 RUN     wget https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
         tar -zxvf k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
         mv k2-crash-application /usr/bin/k2-crash-application && \
-        rm -rf k2-crash-application_0.1.0_linux_amd64.tar.gz
+        rm -f k2-crash-application_0.1.0_linux_amd64.tar.gz
