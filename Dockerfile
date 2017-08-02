@@ -25,13 +25,13 @@ ENV     K8S_VERSION_1_7=v1.7.1
 
 
 ENV     K8S_HELM_VERSION_1_5=v2.3.1
-ENV     K8S_HELM_VERSION_1_6=v2.5.0
-ENV     K8S_HELM_VERSION_1_7=v2.5.1
+ENV     K8S_HELM_VERSION_1_6=v2.5.1
+#ENV     K8S_HELM_VERSION_1_7=v2.6.0
 
 #Latest version of tools
-ENV     LATEST=v1.7
+ENV     LATEST=v1.6
 ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_7
-ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_7
+ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_6
 
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
@@ -48,7 +48,7 @@ ENV     APK_DEV_PACKAGES="gcc g++ git make libffi-dev linux-headers musl-dev lib
 
 RUN     apk add --update --no-cache ${APK_PACKAGES} ${APK_DEV_PACKAGES} && \
     	/alpine-builds/build-docker.sh && \
-        rm -rf /alpine-builds 
+        rm -rf /alpine-builds
 
 # Terraform
 RUN     wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
@@ -81,9 +81,9 @@ RUN     wget -q https://github.com/coreos/etcd/releases/download//${ETCD_VERSION
         rm -rf etcd-${ETCD_VERSION}-linux-amd64/
 
 # Creating path for helm and kubectl executables
-RUN     mkdir -p /opt/cnct/kubernetes/v1.7/bin \
-                 /opt/cnct/kubernetes/v1.5/bin \
+RUN     mkdir -p /opt/cnct/kubernetes/v1.5/bin \
                  /opt/cnct/kubernetes/v1.6/bin \
+                 /opt/cnct/kubernetes/v1.7/bin \
                  /etc/helm/plugins
 
 # Kubectl
@@ -96,7 +96,7 @@ RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_
 RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_7}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.7/bin
-       
+
 
 # Helm
 RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
@@ -107,10 +107,10 @@ RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VE
         tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm  && \
         rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz
-RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
-        tar -zxvf helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
-        mv linux-amd64/helm /opt/cnct/kubernetes/v1.7/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz
+#RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
+#        tar -zxvf helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
+#        mv linux-amd64/helm /opt/cnct/kubernetes/v1.7/bin/helm  && \
+#        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz
 
 RUN ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest && \
          ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/ && \
@@ -128,7 +128,7 @@ RUN     pip install -r /requirements.txt
 
 # Delete build-related packages
 RUN     apk del ${APK_DEV_PACKAGES} && \
-        rm -rfv ~/.cache && \ 
+        rm -rfv ~/.cache && \
         rm -rfv /var/cache/apk/*
 
 # Google cloud work (copied from https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/master/alpine/Dockerfile )
@@ -152,5 +152,3 @@ RUN     wget -q https://github.com/samsung-cnct/k2-crash-application/releases/do
 
 # Quick verification script to confirm all expected binaries are present.
 ADD tests/internal_tooling.sh /internal_tooling_test.sh
-
-
