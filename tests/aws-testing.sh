@@ -15,7 +15,8 @@ echo "modify config in-place"
 build-scripts/update-generated-config.sh cluster/aws/config.yaml ${JOB_BASE_NAME}-${BUILD_ID}
 
 echo "adding helm_override and setting it to false"
-export helm_override_$cluster_name=false
+job_name=`echo ${JOB_BASE_NAME}-${BUILD_ID} | tr '[:upper:]' '[:lower:]'`
+export helm_override_${job_name}=false
 
 echo "dry run"
 PWD=`pwd` && bin/up.sh --config $PWD/cluster/aws/config.yaml --output $PWD/cluster/aws/ -t dryrun
