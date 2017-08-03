@@ -14,6 +14,9 @@ bin/up.sh --generate cluster/aws/config.yaml
 echo "modify config in-place"
 build-scripts/update-generated-config.sh cluster/aws/config.yaml ${JOB_BASE_NAME}-${BUILD_ID}
 
+echo "adding helm_override and setting it to false"
+export helm_override_${JOB_BASE_NAME}-${BUILD_ID}=false
+
 echo "dry run"
 PWD=`pwd` && bin/up.sh --config $PWD/cluster/aws/config.yaml --output $PWD/cluster/aws/ -t dryrun
 if [ $? -ne 0 ]; then
