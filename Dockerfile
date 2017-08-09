@@ -43,7 +43,7 @@ ENV     HELM_PLUGIN=/etc/helm/plugins
 
 ADD     build/alpine-builds /alpine-builds
 
-ENV     APK_PACKAGES="bash ca-certificates openssl openssh python py-pip py-cryptography py-cffi zip unzip wget util-linux"
+ENV     APK_PACKAGES="bash ca-certificates openssl openssh python py-pip py-cryptography py-cffi zip unzip wget util-linux bind-tools"
 ENV     APK_DEV_PACKAGES="gcc g++ git make libffi-dev linux-headers musl-dev libc-dev openssl-dev python-dev unzip mkinitfs kmod mtools squashfs-tools"
 
 RUN     apk add --update --no-cache ${APK_PACKAGES} ${APK_DEV_PACKAGES} && \
