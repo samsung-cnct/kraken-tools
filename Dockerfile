@@ -16,7 +16,7 @@ ENV     PATH $PATH:/google-cloud-sdk/bin
 ENV     ETCD_VERSION=v3.1.0
 ENV     ETCDCTL_API=3
 
-ENV     K8S_VERSION=v1.7.1
+ENV     K8S_VERSION=v1.7.3
 ENV     K8S_HELM_VERSION=v2.5.1
 
 ENV     K8S_VERSION_1_5=v1.5.7
