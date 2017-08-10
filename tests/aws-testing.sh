@@ -15,7 +15,7 @@ echo "modify config in-place"
 build-scripts/update-generated-config.sh cluster/aws/config.yaml ${JOB_BASE_NAME}-${BUILD_ID}
 
 echo "dry run"
-PWD=`pwd` && ./up.sh --config $PWD/cluster/aws/config.yaml --output $PWD/cluster/aws/ -t dryrun
+PWD=`pwd` && bin/up.sh --config $PWD/cluster/aws/config.yaml --output $PWD/cluster/aws/ -t dryrun
 if [ $? -ne 0 ]; then
   echo "Failed at dry run step"
   exit 1;
@@ -23,14 +23,14 @@ fi
 
 echo "up and down"
 err=0
-PWD=`pwd` && ./up.sh --config $PWD/cluster/aws/config.yaml --output $PWD/cluster/aws/
+PWD=`pwd` && bin/up.sh --config $PWD/cluster/aws/config.yaml --output $PWD/cluster/aws/
 up_err=$?
 if [ $up_err -ne 0 ]; then
   err=$up_err
   echo "./up.sh failed"
 fi
 
-PWD=`pwd` && ./down.sh --config $PWD/cluster/aws/config.yaml --output $PWD/cluster/aws/
+PWD=`pwd` && bin/down.sh --config $PWD/cluster/aws/config.yaml --output $PWD/cluster/aws/
 down_err=$?
 if [ $down_err -ne 0 ]; then
   err=$down_err

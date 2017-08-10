@@ -18,14 +18,14 @@ build-scripts/update-generated-config.sh cluster/gke/config.yaml ${JOB_BASE_NAME
 
 echo "up and down"
 err=0
-PWD=`pwd` && ./up.sh --config $PWD/cluster/gke/config.yaml --output $PWD/cluster/gke/ -v '-vvv'
+PWD=`pwd` && bin/up.sh --config $PWD/cluster/gke/config.yaml --output $PWD/cluster/gke/ -v '-vvv'
 up_err=$?
 if [ $up_err -ne 0 ]; then
   err=$up_err
   echo "./up.sh failed"
 fi
 
-PWD=`pwd` && ./down.sh --config $PWD/cluster/gke/config.yaml --output $PWD/cluster/gke/
+PWD=`pwd` && bin/down.sh --config $PWD/cluster/gke/config.yaml --output $PWD/cluster/gke/
 down_err=$?
 if [ $down_err -ne 0 ]; then
   err=$down_err
