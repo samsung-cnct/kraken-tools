@@ -41,12 +41,9 @@ podTemplate(label: 'k2-tools', containers: [
 
             // only push from master.   check that we are on samsung-cnct fork
             stage('Publish') {
-              if (env.RELEASE == "RELEASE" && env.BRANCH_NAME == "master" && git_uri.contains(github_org)) {
-                kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:${env.ReleaseVersion}"
-                kubesh "docker push quay.io/samsung_cnct/k2-tools:${env.ReleaseVersion}"
-              } else if (env.BRANCH_NAME == "master" && git_uri.contains(github_org)) {
-                kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:latest"
-                kubesh "docker push quay.io/samsung_cnct/k2-tools:latest"
+              if (env.BRANCH_NAME == "master" && git_uri.contains(github_org)) {
+                kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:${env.RELEASE_VERSION:-latest}"
+                kubesh "docker push quay.io/samsung_cnct/k2-tools:${env.RELEASE_VERSION:-latest}"
               } else {
                 echo "Not pushing to docker repo:\n    BRANCH_NAME='${env.BRANCH_NAME}'\n    git_uri='${git_uri}'"
               }
