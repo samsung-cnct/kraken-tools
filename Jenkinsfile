@@ -20,6 +20,7 @@ podTemplate(label: 'k2-tools', containers: [
                 // retrieve the URI used for checking out the source
                 // this assumes one branch with one uri
                 git_uri = scm.getRepositories()[0].getURIs()[0].toString()
+                kubesh "env"
             }
             // build new version of k2-tools image on 'docker' container
             stage('Build') {
