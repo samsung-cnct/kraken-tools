@@ -13,7 +13,7 @@ ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
 # google cloud kubectl is superceeded by downloaded kubectl
 ENV     PATH $PATH:/google-cloud-sdk/bin
 
-ENV     ETCD_VERSION=v3.1.0
+ENV     ETCD_VERSION=v3.2.5
 ENV     ETCDCTL_API=3
 
 ENV     K8S_VERSION=v1.7.1
