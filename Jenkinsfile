@@ -2,7 +2,7 @@
 github_org             = "coffeepac" // "samsung-cnct"
 quay_org               = "coffeepac" // "samsung_cnct"
 publish_branch         = "release-path"  // "master"
-image_tag              = "${env.RELEASE_VERSION} ?: latest"
+image_tag              = "${env.RELEASE_VERSION}" ?: "latest"
 
 podTemplate(label: 'k2-tools', containers: [
     containerTemplate(name: 'jnlp', image: "quay.io/samsung_cnct/custom-jnlp:0.1", args: '${computer.jnlpmac} ${computer.name}'),
