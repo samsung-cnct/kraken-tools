@@ -45,7 +45,8 @@ podTemplate(label: 'k2-tools', containers: [
                 kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/k2-tools:${image_tag}"
                 kubesh "docker push quay.io/${quay_org}/k2-tools:${image_tag}"
               } else {
-                echo "Not pushing to docker repo:\n    BRANCH_NAME='${env.BRANCH_NAME}'\n    git_uri='${git_uri}'"
+                echo "Not pushing to docker repo:\n    BRANCH_NAME='${env.BRANCH_NAME}'\n    GIT_BRANCH='${env.GIT_BRANCH}'\n    git_uri='${git_uri}'"
+                kubesh "env"
               }
             }
         }
