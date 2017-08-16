@@ -1,7 +1,7 @@
 // Configuration variables
 github_org             = "coffeepac" // "samsung-cnct"
 quay_org               = "coffeepac" // "samsung_cnct"
-publish_branch         = "faux_mas"  // "master"
+publish_branch         = "release-path"  // "master"
 image_tag              = "${env.RELEASE_VERSION} ?: latest"
 
 podTemplate(label: 'k2-tools', containers: [
@@ -41,7 +41,7 @@ podTemplate(label: 'k2-tools', containers: [
 
             // only push from master.   check that we are on samsung-cnct fork
             stage('Publish') {
-              if (env.BRANCH_NAME == publish_branch && git_uri.contains(github_org)) {
+              if ((env.BRANCH_NAME == publish_branch || env.GIT_BRANCH == publish_branch) && git_uri.contains(github_org)) {
                 kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/k2-tools:${image_tag}"
                 kubesh "docker push quay.io/${quay_org}/k2-tools:${image_tag}"
               } else {
