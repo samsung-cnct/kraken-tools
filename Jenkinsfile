@@ -1,6 +1,7 @@
 // Configuration variables
-github_org             = "samsung-cnct"
-quay_org               = "samsung_cnct"
+github_org             = "coffeepac" // "samsung-cnct"
+quay_org               = "coffeepac" // "samsung_cnct"
+publish_branch         = "faux_mas"  // "master"
 image_tag              = "${env.RELEASE_VERSION} ?: latest"
 
 podTemplate(label: 'k2-tools', containers: [
@@ -25,26 +26,24 @@ podTemplate(label: 'k2-tools', containers: [
                 kubesh "docker build -t k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} ."
             }
             
-            if (env.RELEASE != "RELEASE") {
-              stage('Test') {
-                  parallel (
-                      "aws": {
-                          // test aws (Dryrun, up, down) using k2-tools image
-                          kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /aws-testing.sh"
-                      },
-                      "gke": {
-                      // test gke (up, down) using k2-tools image
-                      kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /gke-testing.sh"
-                      }
-                  )
-              }
+            stage('Test') {
+                parallel (
+                    "aws": {
+                        // test aws (Dryrun, up, down) using k2-tools image
+                        kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /aws-testing.sh"
+                    },
+                    "gke": {
+                    // test gke (up, down) using k2-tools image
+                    kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /gke-testing.sh"
+                    }
+                )
             }
 
             // only push from master.   check that we are on samsung-cnct fork
             stage('Publish') {
-              if (env.BRANCH_NAME == "master" && git_uri.contains(github_org)) {
-                kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/samsung_cnct/k2-tools:${image_tag}"
-                kubesh "docker push quay.io/samsung_cnct/k2-tools:${image_tag}"
+              if (env.BRANCH_NAME == publish_branch && git_uri.contains(github_org)) {
+                kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/k2-tools:${image_tag}"
+                kubesh "docker push quay.io/${quay_org}/k2-tools:${image_tag}"
               } else {
                 echo "Not pushing to docker repo:\n    BRANCH_NAME='${env.BRANCH_NAME}'\n    git_uri='${git_uri}'"
               }
