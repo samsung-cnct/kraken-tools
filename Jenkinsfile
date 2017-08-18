@@ -2,7 +2,7 @@
 github_org             = "samsung-cnct"
 quay_org               = "samsung_cnct"
 publish_branch         = "master"
-image_tag              = "${env.RELEASE_VERSION}" ?: "latest"
+image_tag              = "${env.RELEASE_VERSION}" != "null" ? "${env.RELEASE_VERSION}" : "latest"
 
 podTemplate(label: 'k2-tools', containers: [
     containerTemplate(name: 'jnlp', image: "quay.io/${quay_org}/custom-jnlp:0.1", args: '${computer.jnlpmac} ${computer.name}'),
