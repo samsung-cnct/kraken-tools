@@ -13,25 +13,26 @@ ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
 # google cloud kubectl is superceeded by downloaded kubectl
 ENV     PATH $PATH:/google-cloud-sdk/bin
 
-ENV     ETCD_VERSION=v3.1.0
+ENV     ETCD_VERSION=v3.2.5
 ENV     ETCDCTL_API=3
 
-ENV     K8S_VERSION=v1.7.1
-ENV     K8S_HELM_VERSION=v2.5.1
+ENV     K8S_VERSION=v1.7.4
+ENV     K8S_HELM_VERSION=v2.6.0
 
 ENV     K8S_VERSION_1_5=v1.5.7
 ENV     K8S_VERSION_1_6=v1.6.8
-ENV     K8S_VERSION_1_7=v1.7.1
+ENV     K8S_VERSION_1_7=v1.7.4
+
 
 
 ENV     K8S_HELM_VERSION_1_5=v2.3.1
 ENV     K8S_HELM_VERSION_1_6=v2.5.1
-#ENV     K8S_HELM_VERSION_1_7=v2.6.0
+ENV     K8S_HELM_VERSION_1_7=v2.6.0
 
 #Latest version of tools
-ENV     LATEST=v1.6
+ENV     LATEST=v1.7
 ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_7
-ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_6
+ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_7
 
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
@@ -107,10 +108,10 @@ RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VE
         tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm  && \
         rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz
-#RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
-#        tar -zxvf helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
-#        mv linux-amd64/helm /opt/cnct/kubernetes/v1.7/bin/helm  && \
-#        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz
+RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
+        tar -zxvf helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
+        mv linux-amd64/helm /opt/cnct/kubernetes/v1.7/bin/helm  && \
+        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz
 
 RUN ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest && \
          ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/ && \
