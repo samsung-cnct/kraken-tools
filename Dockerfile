@@ -78,7 +78,8 @@ RUN 	wget -q https://github.com/samsung-cnct/terraform-provider-distroimage/rele
 RUN     wget -q https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
         tar -zxvf etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
         cp etcd-${ETCD_VERSION}-linux-amd64/etcdctl /usr/local/bin && \
-        rm -rf etcd-${ETCD_VERSION}-linux-amd64/
+        rm -rf etcd-${ETCD_VERSION}-linux-amd64/ && \
+        rm -f etcd-${ETCD_VERSION}-linux-amd64.tar.gz
 
 # Creating path for helm and kubectl executables
 RUN     mkdir -p /opt/cnct/kubernetes/v1.5/bin \
