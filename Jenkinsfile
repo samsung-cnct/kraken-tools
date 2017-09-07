@@ -4,7 +4,7 @@ quay_org               = "samsung_cnct"
 publish_branch         = "master"
 image_tag              = "${env.RELEASE_VERSION}" != "null" ? "${env.RELEASE_VERSION}" : "latest"
 
-podTemplate(label: 'k2-tools', containers: [
+podTemplate(label: 'kraken-tools', containers: [
     containerTemplate(name: 'jnlp', image: "quay.io/${quay_org}/custom-jnlp:0.1", args: '${computer.jnlpmac} ${computer.name}'),
     containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true)
   ], volumes: [
@@ -12,7 +12,7 @@ podTemplate(label: 'k2-tools', containers: [
     hostPathVolume(hostPath: '/var/lib/docker/scratch', mountPath: '/mnt/scratch'),
     secretVolume(mountPath: '/home/jenkins/.docker/', secretName: 'samsung-cnct-quay-robot-dockercfg')
   ]) {
-    node('k2-tools') {
+    node('kraken-tools') {
         customContainer('docker') {
             // add a docker rmi/docker purge/etc.
             stage('Checkout') {
@@ -22,7 +22,7 @@ podTemplate(label: 'k2-tools', containers: [
                 git_uri = scm.getRepositories()[0].getURIs()[0].toString()
                 git_branch = scm.getBranches()[0].toString()
             }
-            // build new version of k2-tools image on 'docker' container
+            // build new version of kraken-tools image on 'docker' container
             stage('Build') {
                 kubesh "docker build -t k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} ."
             }
@@ -30,11 +30,11 @@ podTemplate(label: 'k2-tools', containers: [
             stage('Test') {
                 parallel (
                     "aws": {
-                        // test aws (Dryrun, up, down) using k2-tools image
+                        // test aws (Dryrun, up, down) using kraken-tools image
                         kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /aws-testing.sh"
                     },
                     "gke": {
-                    // test gke (up, down) using k2-tools image
+                    // test gke (up, down) using kraken-tools image
                     kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /gke-testing.sh"
                     }
                 )

@@ -3,7 +3,7 @@ apk update
 apk add git
 git clone --branch master  https://github.com/samsung-cnct/k2.git ~/kraken
 
-echo "now in local k2 checkout"
+echo "now in local kraken-lib checkout"
 cd ~/kraken
 mkdir -p /root/.ssh
 build-scripts/fetch-credentials.sh
