@@ -23,8 +23,6 @@ ENV     K8S_VERSION_1_5=v1.5.7
 ENV     K8S_VERSION_1_6=v1.6.8
 ENV     K8S_VERSION_1_7=v1.7.4
 
-
-
 ENV     K8S_HELM_VERSION_1_5=v2.3.1
 ENV     K8S_HELM_VERSION_1_6=v2.5.1
 ENV     K8S_HELM_VERSION_1_7=v2.6.0
@@ -39,6 +37,8 @@ ENV     GO15VENDOREXPERIMENT 1
 
 ENV     HELM_HOME=/etc/helm
 ENV     HELM_PLUGIN=/etc/helm/plugins
+ENV     APP_REGISTRY_PLUGIN_RELEASE=v0.7.0
+ENV     APP_REGISTRY_URL=https://github.com/app-registry/appr-helm-plugin/releases/download/${APP_REGISTRY_PLUGIN_RELEASE}/helm-registry_linux.tar.gz
 
 # Alpine
 
@@ -143,7 +143,8 @@ RUN     wget -q ${GCLOUD_SDK_URL} && \
         gcloud config set metrics/environment github_docker_image
 
 # Install the help app registry plugin
-RUN     appr plugins install helm && rm /etc/helm/plugins/*.gz
+RUN     mkdir -p /etc/helm/plugins/appr && \
+        cd ${HELM_PLUGIN} && wget ${APP_REGISTRY_URL} -O - | tar -zxv
 
 # Crash application
 RUN     wget -q https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
