@@ -21,7 +21,7 @@ We welcome all types of contributions from the community and and don't require a
 Here are some additional resources you might find useful:
 
 * #kraken Slack on [k8s.slack.com](https://k8s.slack.com/)
-* [kraken])(https://github.com/samsung-cnct/k2cli)
+* [kraken](https://github.com/samsung-cnct/k2cli)
 * [kraken-lib issue tracker](https://github.com/samsung-cnct/k2/issues)
 * [kraken](https://github.com/samsung-cnct/k2-tools)
 * [kraken codebase](https://github.com/samsung-cnct/k2cli)
