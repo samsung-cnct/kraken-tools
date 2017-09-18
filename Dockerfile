@@ -144,7 +144,8 @@ RUN     wget -q ${GCLOUD_SDK_URL} && \
 
 # Install the help app registry plugin
 RUN     mkdir -p /etc/helm/plugins/appr && \
-        cd ${HELM_PLUGIN} && wget ${APP_REGISTRY_URL} -O - | tar -zxv
+        cd ${HELM_PLUGIN} && wget ${APP_REGISTRY_URL} -O - | tar -zxv && \
+        helm registry version placeholder
 
 # Crash application
 RUN     wget -q https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
