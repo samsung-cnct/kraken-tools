@@ -24,18 +24,18 @@ podTemplate(label: 'kraken-tools', containers: [
             }
             // build new version of kraken-tools image on 'docker' container
             stage('Build') {
-                kubesh "docker build -t k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} ."
+                kubesh "docker build -t kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} ."
             }
             
             stage('Test') {
                 parallel (
                     "aws": {
                         // test aws (Dryrun, up, down) using kraken-tools image
-                        kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /aws-testing.sh"
+                        kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /aws-testing.sh"
                     },
                     "gke": {
                     // test gke (up, down) using kraken-tools image
-                    kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /gke-testing.sh"
+                    kubesh "PWD=`pwd` && docker run --rm -i  -e JOB_BASE_NAME=${env.JOB_BASE_NAME} -e BUILD_ID=${env.BUILD_ID} kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} /bin/bash -c /gke-testing.sh"
                     }
                 )
             }
@@ -43,8 +43,14 @@ podTemplate(label: 'kraken-tools', containers: [
             // only push from master.   check that we are on samsung-cnct fork
             stage('Publish') {
               if (git_branch.contains(publish_branch) && git_uri.contains(github_org)) {
-                kubesh "docker tag k2-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/k2-tools:${image_tag}"
+                kubesh "docker tag kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/k2-tools:${image_tag}"
+                kubesh "docker tag kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/k2-tools:latest"
+                kubesh "docker tag kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/kraken-tools:${image_tag}"
+                kubesh "docker tag kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/kraken-tools:latest"
                 kubesh "docker push quay.io/${quay_org}/k2-tools:${image_tag}"
+                kubesh "docker push quay.io/${quay_org}/k2-tools:latest"
+                kubesh "docker push quay.io/${quay_org}/kraken-tools:${image_tag}"
+                kubesh "docker push quay.io/${quay_org}/kraken-tools:latest"
               } else {
                 echo "Not pushing to docker repo:\n    BRANCH_NAME='${env.BRANCH_NAME}'\n    GIT_BRANCH='${git_branch}'\n    git_uri='${git_uri}'"
               }
