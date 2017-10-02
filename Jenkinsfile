@@ -44,13 +44,9 @@ podTemplate(label: 'kraken-tools', containers: [
             stage('Publish') {
               if (git_branch.contains(publish_branch) && git_uri.contains(github_org)) {
                 kubesh "docker tag kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/k2-tools:${image_tag}"
-                kubesh "docker tag kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/k2-tools:latest"
                 kubesh "docker tag kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/kraken-tools:${image_tag}"
-                kubesh "docker tag kraken-tools:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/kraken-tools:latest"
                 kubesh "docker push quay.io/${quay_org}/k2-tools:${image_tag}"
-                kubesh "docker push quay.io/${quay_org}/k2-tools:latest"
                 kubesh "docker push quay.io/${quay_org}/kraken-tools:${image_tag}"
-                kubesh "docker push quay.io/${quay_org}/kraken-tools:latest"
               } else {
                 echo "Not pushing to docker repo:\n    BRANCH_NAME='${env.BRANCH_NAME}'\n    GIT_BRANCH='${git_branch}'\n    git_uri='${git_uri}'"
               }
