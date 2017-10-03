@@ -1,7 +1,7 @@
 #!/bin/sh
 apk update
 apk add git
-git clone --branch master  https://github.com/samsung-cnct/k2.git ~/kraken
+git clone --branch master  https://github.com/samsung-cnct/kraken-lib.git ~/kraken
 
 echo "now in local kraken-lib checkout"
 cd ~/kraken
