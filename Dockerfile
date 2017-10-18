@@ -16,21 +16,23 @@ ENV     PATH $PATH:/google-cloud-sdk/bin
 ENV     ETCD_VERSION=v3.2.5
 ENV     ETCDCTL_API=3
 
-ENV     K8S_VERSION=v1.7.6
+ENV     K8S_VERSION=v1.8.1
 ENV     K8S_HELM_VERSION=v2.6.2
 
 ENV     K8S_VERSION_1_5=v1.5.8
 ENV     K8S_VERSION_1_6=v1.6.11
 ENV     K8S_VERSION_1_7=v1.7.8
+ENV     K8S_VERSION_1_8=v1.8.1
 
 ENV     K8S_HELM_VERSION_1_5=v2.3.1
 ENV     K8S_HELM_VERSION_1_6=v2.5.1
 ENV     K8S_HELM_VERSION_1_7=v2.6.2
+ENV     K8S_HELM_VERSION_1_8=v2.6.2
 
 #Latest version of tools
-ENV     LATEST=v1.7
-ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_7
-ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_7
+ENV     LATEST=v1.8
+ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_8
+ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_8
 
 ENV     GOPATH /go
 ENV     GO15VENDOREXPERIMENT 1
@@ -98,6 +100,9 @@ RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_
 RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_7}/bin/linux/amd64/kubectl && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.7/bin
+RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_8}/bin/linux/amd64/kubectl && \
+        chmod a+x kubectl && \
+        mv kubectl /opt/cnct/kubernetes/v1.8/bin
 
 
 # Helm
@@ -113,6 +118,10 @@ RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VE
         tar -zxvf helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.7/bin/helm  && \
         rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz
+RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_8}-linux-amd64.tar.gz  && \
+        tar -zxvf helm-${K8S_HELM_VERSION_1_8}-linux-amd64.tar.gz  && \
+        mv linux-amd64/helm /opt/cnct/kubernetes/v1.8/bin/helm  && \
+        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_8}-linux-amd64.tar.gz
 
 RUN ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest && \
          ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/ && \
