@@ -88,6 +88,7 @@ RUN     wget -q https://github.com/coreos/etcd/releases/download//${ETCD_VERSION
 RUN     mkdir -p /opt/cnct/kubernetes/v1.5/bin \
                  /opt/cnct/kubernetes/v1.6/bin \
                  /opt/cnct/kubernetes/v1.7/bin \
+                 /opt/cnct/kubernetes/v1.8/bin \
                  /etc/helm/plugins
 
 # Kubectl
