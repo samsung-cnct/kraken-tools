@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+
 apk update
 apk add git
-git clone --branch master  https://github.com/samsung-cnct/kraken-lib.git ~/kraken
+git clone --branch master  https://github.com/samsung-cnct/kraken-lib.git "$HOME/kraken"
 
 echo "now in local kraken-lib checkout"
-cd ~/kraken
+cd "$HOME/kraken" || exit 1
 mkdir -p /root/.ssh
 build-scripts/fetch-credentials.sh
 
@@ -14,18 +15,18 @@ mkdir -p cluster/gke
 cp ansible/roles/kraken.config/files/gke-config.yaml cluster/gke/config.yaml
 
 echo "modify config in-place"
-build-scripts/update-generated-config.sh cluster/gke/config.yaml ${JOB_BASE_NAME}-${BUILD_ID}
+build-scripts/update-generated-config.sh cluster/gke/config.yaml "${JOB_BASE_NAME}-${BUILD_ID}"
 
 echo "up and down"
 err=0
-PWD=`pwd` && bin/up.sh --config $PWD/cluster/gke/config.yaml --output $PWD/cluster/gke/ -v '-vvv'
+PWD=$(pwd) && bin/up.sh --config $"PWD/cluster/gke/config.yaml" --output "$PWD/cluster/gke/" -v '-vvv'
 up_err=$?
 if [ $up_err -ne 0 ]; then
   err=$up_err
   echo "./up.sh failed"
 fi
 
-PWD=`pwd` && bin/down.sh --config $PWD/cluster/gke/config.yaml --output $PWD/cluster/gke/
+PWD=$(pwd) && bin/down.sh --config $"PWD/cluster/gke/config.yaml" --output "$PWD/cluster/gke/"
 down_err=$?
 if [ $down_err -ne 0 ]; then
   err=$down_err
