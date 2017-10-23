@@ -1,9 +1,9 @@
 # kraken-tools
 
-kraken-tools conveniently manages all system requirements for [kraken-lib][1].
+kraken-tools conveniently manages all system requirements for [kraken-lib][kl].
 As the base layer, it contains all necessary and expected dependencies at
 specific, tested versions for correct and repeatable operations of kraken-lib
-and [kraken][2].
+and [kraken][k].
 
 It is best to perform any work on dependencies and other environment issues
 here and let kraken-lib build focus on installing and configuring the code in
@@ -16,7 +16,7 @@ environment will be compliant with kraken-lib's requirements.
 
 ## Prerequisites
 
-[Docker][3] must be installed on the machine where you run kraken-tools and
+[Docker][d] must be installed on the machine where you run kraken-tools and
 your user must have permissions to run it.
 
 ## Getting Started
@@ -31,27 +31,27 @@ We welcome all types of contributions from the community and and don't require
 a contributor license agreement. To simplify merging, we prefer pull requests
 based on a feature branch in your personal fork that's based off the current
 master of the repo. For more details, please refer to our
-[kraken-lib Contributing][4] document.
+[kraken-lib Contributing][klcontrib] document.
 
 ## Additional Resources
 
 Here are some additional resources you might find useful:
 
-* #kraken Slack on [k8s.slack.com][5]
-* [kraken][6]
-* [kraken-lib issue tracker][7]
-* [kraken-tools][8]
+* #kraken Slack on [k8s.slack.com][s]
+* [kraken][k]
+* [kraken-lib issue tracker][klissues]
+* [kraken-tools][kt]
 
 ## Maintainer
 
 This document is maintained by Patrick Christopher (@coffeepac) at Samsung
 SDS.
 
-[1]: https://github.com/samsung-cnct/kraken-lib
-[2]: https://github.com/samsung-cnct/kraken
-[3]: https://www.docker.com/
-[4]: https://github.com/samsung-cnct/kraken-lib/blob/master/CONTRIBUTING.md
-[5]: https://k8s.slack.com/
-[6]: https://github.com/samsung-cnct/kraken
-[7]: https://github.com/samsung-cnct/kraken-lib/issues
-[8]: https://github.com/samsung-cnct/kraken-tools
+[k]: https://github.com/samsung-cnct/kraken
+[kl]: https://github.com/samsung-cnct/kraken-lib
+[klcontrib]: https://github.com/samsung-cnct/kraken-lib/blob/master/CONTRIBUTING.md
+[klissues]: https://github.com/samsung-cnct/kraken-lib/issues
+[kt]: https://github.com/samsung-cnct/kraken-tools
+
+[d]: https://www.docker.com/
+[s]: https://k8s.slack.com/
