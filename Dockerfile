@@ -44,7 +44,7 @@ ENV     APP_REGISTRY_URL=https://github.com/app-registry/appr-helm-plugin/releas
 
 # Alpine
 
-ADD     build/alpine-builds /alpine-builds
+COPY     build/alpine-builds /alpine-builds
 
 ENV     APK_PACKAGES="bash ca-certificates openssl openssh python py-openssl py-pip py-cryptography py-cffi zip unzip wget util-linux bind-tools"
 ENV     APK_DEV_PACKAGES="gcc g++ git make libffi-dev linux-headers musl-dev libc-dev openssl-dev python-dev unzip mkinitfs kmod mtools squashfs-tools"
@@ -130,10 +130,10 @@ RUN ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest && \
 
 
 # Python (including ansible)
-ADD     build/requirements.txt /requirements.txt
-ADD     build/gcloud_tree.py /gcloud_tree.py
-ADD     tests/aws-testing.sh /aws-testing.sh
-ADD     tests/gke-testing.sh /gke-testing.sh
+COPY     build/requirements.txt /requirements.txt
+COPY     build/gcloud_tree.py /gcloud_tree.py
+COPY     tests/aws-testing.sh /aws-testing.sh
+COPY     tests/gke-testing.sh /gke-testing.sh
 
 # Install things that need compilers, etc
 RUN     pip install -r /requirements.txt
@@ -165,4 +165,4 @@ RUN     wget -q https://github.com/samsung-cnct/k2-crash-application/releases/do
 
 
 # Quick verification script to confirm all expected binaries are present.
-ADD tests/internal_tooling.sh /internal_tooling_test.sh
+COPY tests/internal_tooling.sh /internal_tooling_test.sh
