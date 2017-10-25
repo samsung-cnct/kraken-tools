@@ -10,7 +10,7 @@ ENV     GCLOUD_SDK_VERSION=162.0.0
 ENV     GCLOUD_FILE_NAME=google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
 ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_FILE_NAME}
 ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
-# google cloud kubectl is superceeded by downloaded kubectl
+# Google cloud kubectl is superceeded by downloaded kubectl
 ENV     PATH $PATH:/google-cloud-sdk/bin
 
 ENV     ETCD_VERSION=v3.2.5
@@ -29,7 +29,7 @@ ENV     K8S_HELM_VERSION_1_6=v2.5.1
 ENV     K8S_HELM_VERSION_1_7=v2.6.2
 ENV     K8S_HELM_VERSION_1_8=v2.7.0
 
-#Latest version of tools
+# Latest version of tools
 ENV     LATEST=v1.8
 ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_8
 ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_8
@@ -43,14 +43,13 @@ ENV     APP_REGISTRY_PLUGIN_RELEASE=v0.7.0
 ENV     APP_REGISTRY_URL=https://github.com/app-registry/appr-helm-plugin/releases/download/${APP_REGISTRY_PLUGIN_RELEASE}/helm-registry_linux.tar.gz
 
 # Alpine
-
 ADD     build/alpine-builds /alpine-builds
 
 ENV     APK_PACKAGES="bash ca-certificates openssl openssh python py-openssl py-pip py-cryptography py-cffi zip unzip wget util-linux bind-tools"
 ENV     APK_DEV_PACKAGES="gcc g++ git make libffi-dev linux-headers musl-dev libc-dev openssl-dev python-dev unzip mkinitfs kmod mtools squashfs-tools"
 
 RUN     apk add --update --no-cache ${APK_PACKAGES} ${APK_DEV_PACKAGES} && \
-    	/alpine-builds/build-docker.sh && \
+    	  /alpine-builds/build-docker.sh && \
         rm -rf /alpine-builds
 
 # Terraform
@@ -66,13 +65,13 @@ RUN     wget -q https://github.com/samsung-cnct/terraform-provider-execute/relea
         mv terraform-provider-execute /usr/bin/
 
 # Adding Terraform CoreOS Box addon
-RUN 	wget -q https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
+RUN 	  wget -q https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
         tar -zxvf terraform-provider-coreosbox_linux_amd64.tar.gz && \
         rm terraform-provider-coreosbox_linux_amd64.tar.gz && \
         mv terraform-provider-coreosbox /usr/bin/
 
 # Adding Terraform Distro Image Selector addon
-RUN 	wget -q https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
+RUN 	  wget -q https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
         tar -zxvf terraform-provider-distroimage_linux_amd64.tar.gz && \
         rm terraform-provider-distroimage_linux_amd64.tar.gz && \
         mv terraform-provider-distro /usr/bin/
