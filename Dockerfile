@@ -176,10 +176,10 @@ RUN     mkdir -p /etc/helm/plugins/appr && \
         helm registry version placeholder
 
 # Crash application
-RUN     wget -q https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
-        tar -zxvf k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
+RUN     wget -q -O crash-app.tgz https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
+        tar -zxvf crash-app.tgz  && \
         mv k2-crash-application /usr/bin/k2-crash-application && \
-        rm -f k2-crash-application_0.1.0_linux_amd64.tar.gz
+        rm -f crash-app.tgz
 
 
 # Quick verification script to confirm all expected binaries are present.
