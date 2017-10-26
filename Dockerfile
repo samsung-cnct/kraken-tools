@@ -21,7 +21,6 @@ ENV     ETCDCTL_API=3
 ENV     K8S_VERSION=v1.8.1
 ENV     K8S_HELM_VERSION=v2.7.0
 
-ENV     K8S_VERSION_1_5=v1.5.8
 ENV     K8S_VERSION_1_6=v1.6.11
 ENV     K8S_1_6_SHA256=0dacad1c3da0397b6234e474979c4095844733315a853feba5690dbdf8db15dc
 ENV     K8S_VERSION_1_7=v1.7.8
@@ -29,8 +28,6 @@ ENV     K8S_1_7_SHA256=219bbdd3b36949004432230629f14caf6e36839537bac54d75c02ca0b
 ENV     K8S_VERSION_1_8=v1.8.2
 ENV     K8S_1_8_SHA256=15bf424a40544d2ff02eeba00d92a67409a31d2139c78b152b7c57a8555a1549
 
-ENV     K8S_HELM_VERSION_1_5=v2.3.1
-ENV     K8S_HELM_1_5=a655cfaaf8917c7f6e8a9ac52dddb24b6294774aab175b5c23848b1d1a50de9d
 ENV     K8S_HELM_VERSION_1_6=v2.5.1
 ENV     K8S_HELM_1_6=0ea53d0d6086805f8f22c609a2f1b5b21ced96d5cf4c6a4a70588bc3822e79c2
 ENV     K8S_HELM_VERSION_1_7=v2.6.2
@@ -95,16 +92,12 @@ RUN     wget -q -O etcd.tgz https://github.com/coreos/etcd/releases/download//${
         rm -f etcd.tgz
 
 # Creating path for helm and kubectl executables
-RUN     mkdir -p /opt/cnct/kubernetes/v1.5/bin \
-                 /opt/cnct/kubernetes/v1.6/bin \
+RUN     mkdir -p /opt/cnct/kubernetes/v1.6/bin \
                  /opt/cnct/kubernetes/v1.7/bin \
                  /opt/cnct/kubernetes/v1.8/bin \
                  /etc/helm/plugins
 
 # Kubectl
-RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && \
-        chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.5/bin
 RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && \
         echo "${K8S_1_6_SHA256} kubectl" | sha256sum -c - && \
         chmod a+x kubectl && \
@@ -120,11 +113,6 @@ RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_
 
 
 # Helm
-RUN     wget -q -O helm_1_5.tgz http://storage.googleapis.com/kubernetes-helm/helm-v2.5.1-linux-amd64.tar.gz  && \
-        echo "$K8S_HELM_1_5_SHA256 helm_1_5.tgz" | sha256sum -c - && \
-        tar -zxvf helm_1_5.tgz  && \
-        mv linux-amd64/helm /opt/cnct/kubernetes/v1.5/bin/helm  && \
-        rm -rf linux-amd64 helm_1_5.tgz
 RUN     wget -q -O helm_1_6.tgz http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
         echo "${K8S_HELM_1_6_SHA256} helm_1_6.tgz" | sha256sum -c - && \
         tar -zxvf helm_1_6.tgz  && \
