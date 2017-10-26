@@ -4,8 +4,11 @@ MAINTAINER Michael Venezia <mvenezia@gmail.com>
 ENV     TERRAFORM_VERSION=0.8.6
 ENV     TF_SHA256=2b4f330e70b757a640ba8d4e1eada86445240b5f8cd43194d878e0c05175f6c0
 ENV     TF_COREOSBOX_VERSION=v0.0.3
+ENV     TF_COREOSBOX_SHA256=88b3b3dd4479748813f9ab30d7fdb9915f303dd5c7b6ae250be5b81e56a9b9c9
 ENV     TF_DISTROIMAGE_VERSION=v0.0.1
+ENV     TF_DISTROIMAGE_SHA256=df118caec199d650f5aad53051ca1e11f6b054880e9816cc6a5a38f178446ade
 ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.4
+ENV     TF_PROVIDEREXECUTE_SHA256=c0cdb640e1640210d6bcbda3fa37db0fac8fbd9af39597a765ad7606dd73be7f
 
 ENV     GCLOUD_SDK_VERSION=162.0.0
 ENV     GCLOUD_SHA256=4a2fcf7c91830b9a3460dcdb716f37882e2555b8ca22e30b403108e5e4be3158
@@ -67,21 +70,24 @@ RUN     wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/te
         mv terraform /usr/bin/
 
 # Adding Terraform Provider Execute addon
-RUN     wget -q https://github.com/samsung-cnct/terraform-provider-execute/releases/download/${TF_PROVIDEREXECUTE_VERSION}/terraform-provider-execute_linux_amd64.tar.gz && \
-        tar -zxvf terraform-provider-execute_linux_amd64.tar.gz && \
-        rm terraform-provider-execute_linux_amd64.tar.gz && \
+RUN     wget -q -O tf-prov.tgz https://github.com/samsung-cnct/terraform-provider-execute/releases/download/${TF_PROVIDEREXECUTE_VERSION}/terraform-provider-execute_linux_amd64.tar.gz && \
+        echo "${TF_PROVIDEREXECUTE_SHA256}  tf-prov.tgz" | sha256sum -c - && \
+        tar -zxvf tf-prov.tgz && \
+        rm tf-prov.tgz && \
         mv terraform-provider-execute /usr/bin/
 
 # Adding Terraform CoreOS Box addon
-RUN     wget -q https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
-        tar -zxvf terraform-provider-coreosbox_linux_amd64.tar.gz && \
-        rm terraform-provider-coreosbox_linux_amd64.tar.gz && \
+RUN     wget -q -O tf-coreos.tgz https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
+        echo "${TF_COREOSBOX_SHA256}  tf-coreos.tgz" | sha256sum -c - && \
+        tar -zxvf tf-coreos.tgz && \
+        rm tf-coreos.tgz && \
         mv terraform-provider-coreosbox /usr/bin/
 
 # Adding Terraform Distro Image Selector addon
-RUN     wget -q https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
-        tar -zxvf terraform-provider-distroimage_linux_amd64.tar.gz && \
-        rm terraform-provider-distroimage_linux_amd64.tar.gz && \
+RUN     wget -q -O tf-distroimage.tgz https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
+        echo "${TF_DISTROIMAGE_SHA256}  tf-distroimage.tgz" | sha256sum -c - && \
+        tar -zxvf tf-distroimage.tgz && \
+        rm tf-distroimage.tgz && \
         mv terraform-provider-distro /usr/bin/
 
 # Etcd
