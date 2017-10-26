@@ -2,7 +2,7 @@ FROM alpine:3.6
 MAINTAINER Michael Venezia <mvenezia@gmail.com>
 
 ENV     TERRAFORM_VERSION=0.8.6
-ENV     TF_SHA256=a5b654132d8512d3341f092b9f66c222315c4b3ca6dc217ed3ff2bdfa9f4a235
+ENV     TF_SHA256=2b4f330e70b757a640ba8d4e1eada86445240b5f8cd43194d878e0c05175f6c0
 ENV     TF_COREOSBOX_VERSION=v0.0.3
 ENV     TF_DISTROIMAGE_VERSION=v0.0.1
 ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.4
@@ -60,9 +60,9 @@ RUN     apk add --update --no-cache ${APK_PACKAGES} ${APK_DEV_PACKAGES} && \
 
 # Terraform
 RUN     wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+        echo "${TF_SHA256} terraform_${TERRAFORM_VERSION}_linux_amd64.zip" | sha256sum -c - && \
         unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
         rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-        echo "${TF_SHA256} terraform" | sha256sum -c - && \
         mv terraform /usr/bin/
 
 # Adding Terraform Provider Execute addon
