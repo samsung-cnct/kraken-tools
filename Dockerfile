@@ -2,34 +2,45 @@ FROM alpine:3.6
 MAINTAINER Michael Venezia <mvenezia@gmail.com>
 
 ENV     TERRAFORM_VERSION=0.8.6
+ENV     TF_SHA256=2b4f330e70b757a640ba8d4e1eada86445240b5f8cd43194d878e0c05175f6c0
 ENV     TF_COREOSBOX_VERSION=v0.0.3
+ENV     TF_COREOSBOX_SHA256=88b3b3dd4479748813f9ab30d7fdb9915f303dd5c7b6ae250be5b81e56a9b9c9
 ENV     TF_DISTROIMAGE_VERSION=v0.0.1
+ENV     TF_DISTROIMAGE_SHA256=df118caec199d650f5aad53051ca1e11f6b054880e9816cc6a5a38f178446ade
 ENV     TF_PROVIDEREXECUTE_VERSION=v0.0.4
+ENV     TF_PROVIDEREXECUTE_SHA256=c0cdb640e1640210d6bcbda3fa37db0fac8fbd9af39597a765ad7606dd73be7f
 
 ENV     GCLOUD_SDK_VERSION=162.0.0
-ENV     GCLOUD_FILE_NAME=google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
-ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_FILE_NAME}
+ENV     GCLOUD_SHA256=4a2fcf7c91830b9a3460dcdb716f37882e2555b8ca22e30b403108e5e4be3158
+ENV     GCLOUD_SDK_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
 ENV     CLOUDSDK_PYTHON_SITEPACKAGES 1
-# google cloud kubectl is superceeded by downloaded kubectl
+# Google cloud kubectl is superseded by downloaded kubectl
 ENV     PATH $PATH:/google-cloud-sdk/bin
 
 ENV     ETCD_VERSION=v3.2.5
+ENV     ETCD_SHA256=44a05f6d392a754329086f7a5356d1727d5fb19f331f48fd8109a8b24ef9616c
 ENV     ETCDCTL_API=3
 
 ENV     K8S_VERSION=v1.8.1
 ENV     K8S_HELM_VERSION=v2.7.0
 
-ENV     K8S_VERSION_1_5=v1.5.8
 ENV     K8S_VERSION_1_6=v1.6.11
+ENV     K8S_1_6_SHA256=c11e96a89b1e825104b7a6fe93eca4809190c3ba08871754a0d2f11fa58871f8
 ENV     K8S_VERSION_1_7=v1.7.8
+ENV     K8S_1_7_SHA256=c4fd350f9fac76121dda479c1ceba2d339b19f8806aa54207eff55c9c6896724
 ENV     K8S_VERSION_1_8=v1.8.2
+ENV     K8S_1_8_SHA256=c5c258b0728d9c0806b34079e130f21f304439c9a824d46ce3d62ad4dbeeb0d0
 
-ENV     K8S_HELM_VERSION_1_5=v2.3.1
 ENV     K8S_HELM_VERSION_1_6=v2.5.1
+ENV     HELM_2_5_SHA256=0ea53d0d6086805f8f22c609a2f1b5b21ced96d5cf4c6a4a70588bc3822e79c2
 ENV     K8S_HELM_VERSION_1_7=v2.6.2
+ENV     HELM_2_6_SHA256=ba807d6017b612a0c63c093a954c7d63918d3e324bdba335d67b7948439dbca8
 ENV     K8S_HELM_VERSION_1_8=v2.7.0
+ENV     HELM_2_7_SHA256=5a106eb569d873669adacba28ff8297293200bd6dc67b379af61027eb05b6118
 
-#Latest version of tools
+ENV     CRASH_APP_SHA256=7f0697cf50a98d87a14be5d4c2d2a31a166df8d7a5eed830a90ead8b49bf3d97
+
+# Latest version of tools
 ENV     LATEST=v1.8
 ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_8
 ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_8
@@ -43,86 +54,88 @@ ENV     APP_REGISTRY_PLUGIN_RELEASE=v0.7.0
 ENV     APP_REGISTRY_URL=https://github.com/app-registry/appr-helm-plugin/releases/download/${APP_REGISTRY_PLUGIN_RELEASE}/helm-registry_linux.tar.gz
 
 # Alpine
-
 ADD     build/alpine-builds /alpine-builds
 
 ENV     APK_PACKAGES="bash ca-certificates openssl openssh python py-openssl py-pip py-cryptography py-cffi zip unzip wget util-linux bind-tools"
 ENV     APK_DEV_PACKAGES="gcc g++ git make libffi-dev linux-headers musl-dev libc-dev openssl-dev python-dev unzip mkinitfs kmod mtools squashfs-tools"
 
 RUN     apk add --update --no-cache ${APK_PACKAGES} ${APK_DEV_PACKAGES} && \
-    	/alpine-builds/build-docker.sh && \
+        /alpine-builds/build-docker.sh && \
         rm -rf /alpine-builds
 
 # Terraform
 RUN     wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+        echo "${TF_SHA256}  terraform_${TERRAFORM_VERSION}_linux_amd64.zip" | sha256sum -c - && \
         unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
         rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
         mv terraform /usr/bin/
 
 # Adding Terraform Provider Execute addon
-RUN     wget -q https://github.com/samsung-cnct/terraform-provider-execute/releases/download/${TF_PROVIDEREXECUTE_VERSION}/terraform-provider-execute_linux_amd64.tar.gz && \
-        tar -zxvf terraform-provider-execute_linux_amd64.tar.gz && \
-        rm terraform-provider-execute_linux_amd64.tar.gz && \
+RUN     wget -q -O tf-prov.tgz https://github.com/samsung-cnct/terraform-provider-execute/releases/download/${TF_PROVIDEREXECUTE_VERSION}/terraform-provider-execute_linux_amd64.tar.gz && \
+        echo "${TF_PROVIDEREXECUTE_SHA256}  tf-prov.tgz" | sha256sum -c - && \
+        tar -zxvf tf-prov.tgz && \
+        rm tf-prov.tgz && \
         mv terraform-provider-execute /usr/bin/
 
 # Adding Terraform CoreOS Box addon
-RUN 	wget -q https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
-        tar -zxvf terraform-provider-coreosbox_linux_amd64.tar.gz && \
-        rm terraform-provider-coreosbox_linux_amd64.tar.gz && \
+RUN     wget -q -O tf-coreos.tgz https://github.com/samsung-cnct/terraform-provider-coreosbox/releases/download/${TF_COREOSBOX_VERSION}/terraform-provider-coreosbox_linux_amd64.tar.gz && \
+        echo "${TF_COREOSBOX_SHA256}  tf-coreos.tgz" | sha256sum -c - && \
+        tar -zxvf tf-coreos.tgz && \
+        rm tf-coreos.tgz && \
         mv terraform-provider-coreosbox /usr/bin/
 
 # Adding Terraform Distro Image Selector addon
-RUN 	wget -q https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
-        tar -zxvf terraform-provider-distroimage_linux_amd64.tar.gz && \
-        rm terraform-provider-distroimage_linux_amd64.tar.gz && \
+RUN     wget -q -O tf-distroimage.tgz https://github.com/samsung-cnct/terraform-provider-distroimage/releases/download/${TF_DISTROIMAGE_VERSION}/terraform-provider-distroimage_linux_amd64.tar.gz && \
+        echo "${TF_DISTROIMAGE_SHA256}  tf-distroimage.tgz" | sha256sum -c - && \
+        tar -zxvf tf-distroimage.tgz && \
+        rm tf-distroimage.tgz && \
         mv terraform-provider-distro /usr/bin/
 
 # Etcd
-RUN     wget -q https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
-        tar -zxvf etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
+RUN     wget -q -O etcd.tgz https://github.com/coreos/etcd/releases/download//${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz && \
+        echo "${ETCD_SHA256}  etcd.tgz" | sha256sum -c - && \
+        tar -zxvf etcd.tgz && \
         cp etcd-${ETCD_VERSION}-linux-amd64/etcdctl /usr/local/bin && \
         rm -rf etcd-${ETCD_VERSION}-linux-amd64/ && \
-        rm -f etcd-${ETCD_VERSION}-linux-amd64.tar.gz
+        rm -f etcd.tgz
 
 # Creating path for helm and kubectl executables
-RUN     mkdir -p /opt/cnct/kubernetes/v1.5/bin \
-                 /opt/cnct/kubernetes/v1.6/bin \
+RUN     mkdir -p /opt/cnct/kubernetes/v1.6/bin \
                  /opt/cnct/kubernetes/v1.7/bin \
                  /opt/cnct/kubernetes/v1.8/bin \
                  /etc/helm/plugins
 
 # Kubectl
-RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_5}/bin/linux/amd64/kubectl && \
-        chmod a+x kubectl && \
-        mv kubectl /opt/cnct/kubernetes/v1.5/bin
-RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && \
+RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/v1.6.11/bin/linux/amd64/kubectl && \
+        echo "${K8S_1_6_SHA256}  kubectl" | sha256sum -c - && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.6/bin
 RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_7}/bin/linux/amd64/kubectl && \
+        echo "${K8S_1_7_SHA256}  kubectl" | sha256sum -c - && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.7/bin
 RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_8}/bin/linux/amd64/kubectl && \
+        echo "${K8S_1_8_SHA256}  kubectl" | sha256sum -c - && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.8/bin
 
 
 # Helm
-RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
-        tar -zxvf helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz  && \
-        mv linux-amd64/helm /opt/cnct/kubernetes/v1.5/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_5}-linux-amd64.tar.gz
-RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
-        tar -zxvf helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz  && \
+RUN     wget -q -O helm-1-6.tgz http://storage.googleapis.com/kubernetes-helm/helm-v2.5.1-linux-amd64.tar.gz  && \
+        echo "${HELM_2_5_SHA256}  helm-1-6.tgz" | sha256sum -c - && \
+        tar -zxvf helm-1-6.tgz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_6}-linux-amd64.tar.gz
-RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
-        tar -zxvf helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
+        rm -rf linux-amd64 helm-1-6.tgz
+RUN     wget -q -O helm-1-7.tgz http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
+        echo "${HELM_2_6_SHA256}  helm-1-7.tgz" | sha256sum -c - && \
+        tar -zxvf helm-1-7.tgz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.7/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz
-RUN     wget -q http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_8}-linux-amd64.tar.gz  && \
-        tar -zxvf helm-${K8S_HELM_VERSION_1_8}-linux-amd64.tar.gz  && \
+        rm -rf linux-amd64 helm-1-7.tgz
+RUN     wget -q -O helm-1-8.tgz http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_8}-linux-amd64.tar.gz  && \
+        echo "${HELM_2_7_SHA256}  helm-1-8.tgz" | sha256sum -c - && \
+        tar -zxvf helm-1-8.tgz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.8/bin/helm  && \
-        rm -rf linux-amd64 helm-${K8S_HELM_VERSION_1_8}-linux-amd64.tar.gz
+        rm -rf linux-amd64 helm-1-8.tgz
 
 RUN ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest && \
          ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/ && \
@@ -144,9 +157,10 @@ RUN     apk del ${APK_DEV_PACKAGES} && \
         rm -rfv /var/cache/apk/*
 
 # Google cloud work (copied from https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/master/alpine/Dockerfile )
-RUN     wget -q ${GCLOUD_SDK_URL} && \
-        tar xzf ${GCLOUD_FILE_NAME} && \
-        rm ${GCLOUD_FILE_NAME} && \
+RUN     wget -q -O gcloud.tgz ${GCLOUD_SDK_URL} && \
+        echo "${GCLOUD_SHA256}  gcloud.tgz" | sha256sum -c - && \
+        tar xzf gcloud.tgz && \
+        rm gcloud.tgz && \
         ln -s /lib /lib64 && \
         gcloud config set core/disable_usage_reporting true && \
         gcloud config set component_manager/disable_update_check true && \
@@ -158,10 +172,11 @@ RUN     mkdir -p /etc/helm/plugins/appr && \
         helm registry version placeholder
 
 # Crash application
-RUN     wget -q https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
-        tar -zxvf k2-crash-application_0.1.0_linux_amd64.tar.gz  && \
+RUN     wget -q -O crash-app.tgz https://github.com/samsung-cnct/k2-crash-application/releases/download/0.1.0/k2-crash-application_0.1.0_linux_amd64.tar.gz && \
+        echo "${CRASH_APP_SHA256}  crash-app.tgz" | sha256sum -c - && \
+        tar -zxvf crash-app.tgz  && \
         mv k2-crash-application /usr/bin/k2-crash-application && \
-        rm -f k2-crash-application_0.1.0_linux_amd64.tar.gz
+        rm -f crash-app.tgz
 
 
 # Quick verification script to confirm all expected binaries are present.
