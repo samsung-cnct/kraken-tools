@@ -1,0 +1,18 @@
+build-branch:
+  stage: build
+  services:
+    - docker:dind
+  variables:
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_JOB_ID
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+  only:
+    - branches
+    - master
+  image: docker:latest
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+  - docker build -t $IMAGE_URI .
+  - docker push $IMAGE_URI
