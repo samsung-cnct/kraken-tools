@@ -17,11 +17,29 @@ build-branch:
   - docker build -t $IMAGE_URI .
   - docker push $IMAGE_URI
 
-test-branch:
+build-tags:
+  stage: build
+  services:
+    - docker:dind
+  variables:
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+  only:
+    - tags
+  image: docker:latest
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+  - docker build -t $IMAGE_URI .
+  - docker push $IMAGE_URI
+
+aws-branch:
   stage: test
   variables:
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
-    JOB_BASE_NAME: $CI_PROJECT_NAME
+    JOB_BASE_NAME: ${CI_PROJECT_NAMESPACE}_${CI_PROJECT_NAME}
     BUILD_ID: $CI_PIPELINE_ID
   only:
     - branches
@@ -36,3 +54,75 @@ test-branch:
   - echo $AWS_CONFIG | base64 -d > /root/.aws/config
   - /bin/bash -c /aws-testing.sh
 
+gke-branch:
+  stage: test
+  variables:
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+    JOB_BASE_NAME: ${CI_PROJECT_NAMESPACE}_${CI_PROJECT_NAME}
+    BUILD_ID: $CI_PIPELINE_ID
+  only:
+    - branches
+    - master
+  image: $IMAGE_URI
+  script:
+  - mkdir -p /root/.ssh /root/.config/gcloud/
+  - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
+  - chmod og-wrx /root/.ssh/id_rsa
+  - echo $SSH_PUBLIC_KEY | base64 -d > /root/.ssh/id_rsa.pub
+  - echo $GKE_CONFIG | base64 -d > /root/.config/gcloud/robot.json
+  - /bin/bash -c /gke-testing.sh
+
+aws-tags:
+  stage: test
+  variables:
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+    JOB_BASE_NAME: ${CI_PROJECT_NAMESPACE}_${CI_PROJECT_NAME}
+    BUILD_ID: $CI_PIPELINE_ID
+  only:
+    - tags
+  image: $IMAGE_URI
+  script:
+  - mkdir -p /root/.ssh /root/.aws
+  - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
+  - chmod og-wrx /root/.ssh/id_rsa
+  - echo $SSH_PUBLIC_KEY | base64 -d > /root/.ssh/id_rsa.pub
+  - echo $AWS_CREDENTIALS | base64 -d > /root/.aws/credentials
+  - echo $AWS_CONFIG | base64 -d > /root/.aws/config
+  - /bin/bash -c /aws-testing.sh
+
+gke-tags:
+  stage: test
+  variables:
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+    JOB_BASE_NAME: ${CI_PROJECT_NAMESPACE}_${CI_PROJECT_NAME}
+    BUILD_ID: $CI_PIPELINE_ID
+  only:
+    - tags
+  image: $IMAGE_URI
+  script:
+  - mkdir -p /root/.ssh /root/.config/gcloud/
+  - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
+  - chmod og-wrx /root/.ssh/id_rsa
+  - echo $SSH_PUBLIC_KEY | base64 -d > /root/.ssh/id_rsa.pub
+  - echo $GKE_CONFIG | base64 -d > /root/.config/gcloud/robot.json
+  - /bin/bash -c /gke-testing.sh
+
+deploy-tags:
+  stage: deploy
+  services:
+    - docker:dind
+  variables:
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+  only:
+    - tags
+  image: docker:latest
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker login -u $PUBLISH_USERNAME -p $PUBLISH_PASSWORD $PUBLISH_REGISTRY
+  script:
+  - docker pull $IMAGE_URI
+  - docker tag $IMAGE_URI ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
+  - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
