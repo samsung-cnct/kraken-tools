@@ -29,13 +29,14 @@ ENV     K8S_1_6_SHA256=c11e96a89b1e825104b7a6fe93eca4809190c3ba08871754a0d2f11fa
 ENV     K8S_VERSION_1_7=v1.7.8
 ENV     K8S_1_7_SHA256=c4fd350f9fac76121dda479c1ceba2d339b19f8806aa54207eff55c9c6896724
 ENV     K8S_VERSION_1_8=v1.8.2
-ENV     K8S_1_8_SHA256=e5a57db78e558f10fd26254362d68523670d1f9ed85cd14d9199295617d6afad
+ENV     K8S_1_8_SHA256=c5c258b0728d9c0806b34079e130f21f304439c9a824d46ce3d62ad4dbeeb0d0
 
 ENV     K8S_HELM_VERSION_1_6=v2.5.1
 ENV     HELM_2_5_SHA256=0ea53d0d6086805f8f22c609a2f1b5b21ced96d5cf4c6a4a70588bc3822e79c2
 ENV     K8S_HELM_VERSION_1_7=v2.6.2
 ENV     HELM_2_6_SHA256=ba807d6017b612a0c63c093a954c7d63918d3e324bdba335d67b7948439dbca8
 ENV     K8S_HELM_VERSION_1_8=v2.7.0
+ENV     HELM_2_7_SHA256=5a106eb569d873669adacba28ff8297293200bd6dc67b379af61027eb05b6118
 
 ENV     CRASH_APP_SHA256=7f0697cf50a98d87a14be5d4c2d2a31a166df8d7a5eed830a90ead8b49bf3d97
 
@@ -125,16 +126,16 @@ RUN     wget -q -O helm-1-6.tgz http://storage.googleapis.com/kubernetes-helm/he
         tar -zxvf helm-1-6.tgz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.6/bin/helm  && \
         rm -rf linux-amd64 helm-1-6.tgz
-RUN     wget -q -O helm_1_7.tgz http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
-        echo "${HELM_2_6_SHA256}  helm_1_7.tgz" | sha256sum -c - && \
-        tar -zxvf helm_1_7.tgz  && \
+RUN     wget -q -O helm-1-7.tgz http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_7}-linux-amd64.tar.gz  && \
+        echo "${HELM_2_6_SHA256}  helm-1-7.tgz" | sha256sum -c - && \
+        tar -zxvf helm-1-7.tgz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.7/bin/helm  && \
-        rm -rf linux-amd64 helm_1_7.tgz
-RUN     wget -q -O helm_1_8.tgz http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_8}-linux-amd64.tar.gz  && \
-        echo "${HELM_2_6_SHA256}  helm_1_8.tgz" | sha256sum -c - && \
-        tar -zxvf helm_1_8.tgz  && \
+        rm -rf linux-amd64 helm-1-7.tgz
+RUN     wget -q -O helm-1-8.tgz http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_8}-linux-amd64.tar.gz  && \
+        echo "${HELM_2_7_SHA256}  helm-1-8.tgz" | sha256sum -c - && \
+        tar -zxvf helm-1-8.tgz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.8/bin/helm  && \
-        rm -rf linux-amd64 helm_1_8.tgz
+        rm -rf linux-amd64 helm-1-8.tgz
 
 RUN ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest && \
          ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/ && \
