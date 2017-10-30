@@ -21,6 +21,8 @@ test-branch:
   stage: test
   variables:
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+    JOB_BASE_NAME: $CI_PROJECT_NAME
+    BUILD_ID: $CI_PIPELINE_ID
   only:
     - branches
     - master
