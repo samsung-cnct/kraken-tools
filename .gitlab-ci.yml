@@ -1,5 +1,5 @@
 build-branch:
-  stage: build
+  stage: dummy
   services:
     - docker:dind
   variables:
@@ -16,3 +16,15 @@ build-branch:
   script:
   - docker build -t $IMAGE_URI .
   - docker push $IMAGE_URI
+
+test-branch:
+  stage: test
+  variables:
+    IMAGE_URI2: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_JOB_ID
+    IMAGE_URI: registry.cnct.io/venezia/kraken-tools:branch-add_gitlab-123
+  only:
+    - branches
+    - master
+  image: $IMAGE_URI
+  script:
+  - ls -la /
