@@ -39,7 +39,8 @@
 build:branch-image:
   <<: *build_definition
   variables:
-    <<: *dind_definition
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
@@ -48,7 +49,8 @@ build:branch-image:
 build:tagged-image:
   <<: *build_definition
   variables:
-    <<: *dind_definition
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
@@ -119,7 +121,8 @@ deploy:tagged-image:
   services:
     - docker:dind
   variables:
-    <<: *dind_definition
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
