@@ -134,7 +134,6 @@ test:gke-on-tags:
     - tags
 
 deploy:tagged-image:
-  <<: *docker_definition
   stage: deploy
   services:
     - docker:dind
