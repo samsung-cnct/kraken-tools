@@ -19,7 +19,13 @@
 # PUBLISH_PASSWORD - the password for the registry
 # PUBLISH_IMAGE - the image in the registry (organzation/namespace included, think samsung_cnct/kraken-tools)
 
-.build_template: &build_definition
+stages:
+  - build
+  - test
+  - deploy
+  - cleanup
+
+.docker_template: &docker_definition
   stage: build
   services:
     - docker:dind
@@ -37,7 +43,8 @@
     DOCKER_DRIVER: overlay2
 
 build:branch-image:
-  <<: *build_definition
+  <<: *docker_definition
+  stage: build
   variables:
     <<: *dind_definition
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
@@ -46,7 +53,8 @@ build:branch-image:
     - master
 
 build:tagged-image:
-  <<: *build_definition
+  <<: *docker_definition
+  stage: build
   variables:
     <<: *dind_definition
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
@@ -87,23 +95,23 @@ build:tagged-image:
     JOB_BASE_NAME: ${CI_PROJECT_NAME}
     BUILD_ID: $CI_PIPELINE_ID
 
-test:aws-on-branch:
-  <<: *aws_test_definition
-  variables:
-    <<: *test_cloud_definition
-    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
-  only:
-    - branches
-    - master
+#test:aws-on-branch:
+#  <<: *aws_test_definition
+#  variables:
+#    <<: *test_cloud_definition
+#    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+#  only:
+#    - branches
+#    - master
 
-test:gke-on-branch:
-  <<: *gke_test_definition
-  variables:
-    <<: *test_cloud_definition
-    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
-  only:
-    - branches
-    - master
+#test:gke-on-branch:
+#  <<: *gke_test_definition
+#  variables:
+#    <<: *test_cloud_definition
+#    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+#  only:
+#    - branches
+#    - master
 
 test:aws-on-tags:
   <<: *aws_test_definition
@@ -122,20 +130,33 @@ test:gke-on-tags:
     - tags
 
 deploy:tagged-image:
+  <<: *docker_definition
   stage: deploy
-  services:
-    - docker:dind
   variables:
     <<: *dind_definition
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
-  image: docker:latest
-  before_script:
-    - docker info
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker login -u $PUBLISH_USERNAME -p $PUBLISH_PASSWORD $PUBLISH_REGISTRY
   script:
-  - docker pull $IMAGE_URI
-  - docker tag $IMAGE_URI ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
-  - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
+    - docker login -u $PUBLISH_USERNAME -p $PUBLISH_PASSWORD $PUBLISH_REGISTRY
+    - docker pull $IMAGE_URI
+    - docker tag $IMAGE_URI ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
+    - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
+
+cleanup:branch-image:
+  <<: *docker_definition
+  stage: cleanup
+  variables:
+    <<: *dind_definition
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+    DOCKER_REGISTRY: $CI_REGISTRY
+    DOCKER_USERNAME: gitlab-ci-token
+    DOCKER_PASSWORD: $CI_JOB_TOKEN
+    DOCKER_PROJECT: $CI_PROJECT_PATH
+    DOCKER_TAG: branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  only:
+    - branches
+    - master
+  when: always
+  allow_failure: true
+  image: registry.cnct.io/venezia/docker-registry-curl:v0.1.0
