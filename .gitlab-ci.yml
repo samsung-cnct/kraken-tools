@@ -1,3 +1,24 @@
+#
+# Kraken Build File for GitLab
+# This pipeline requires 9 variables to be set in the CI/CD Settings
+#
+# General Test Cluster Variables:
+# SSH_KEY - base64 encoded ssh key for use with the test clusters (think ~/.ssh/id_rsa)
+# SSH_PUBLIC_KEY - base64 encoded ssh public key for use with the test clusters (think ~/.ssh/id_rsa.pub)
+#
+# AWS Cluster Variables:
+# AWS_CREDENTIALS - base64 encoded credentials file (think ~/.aws/credentials)
+# AWS_CONFIG - base64 encoded config file (think ~/.aws/config)
+#
+# GKE Cluster Variables:
+# GKE_CONFIG - base64 encoded json file (think ~/.config/gcloud/someconfig.json)
+#
+# Publish Variables:
+# PUBLISH_REGISTRY - the registry you want to publish to (think quay.io)
+# PUBLISH_USERNAME - the username for the registry
+# PUBLISH_PASSWORD - the password for the registry
+# PUBLISH_IMAGE - the image in the registry (organzation/namespace included, think samsung_cnct/kraken-tools)
+
 build-branch:
   stage: build
   services:
