@@ -99,23 +99,23 @@ build:tagged-image:
     JOB_BASE_NAME: ${CI_PROJECT_NAME}
     BUILD_ID: $CI_PIPELINE_ID
 
-#test:aws-on-branch:
-#  <<: *aws_test_definition
-#  variables:
-#    <<: *test_cloud_definition
-#    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
-#  only:
-#    - branches
-#    - master
+test:aws-on-branch:
+  <<: *aws_test_definition
+  variables:
+    <<: *test_cloud_definition
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  only:
+    - branches
+    - master
 
-#test:gke-on-branch:
-#  <<: *gke_test_definition
-#  variables:
-#    <<: *test_cloud_definition
-#    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
-#  only:
-#    - branches
-#    - master
+test:gke-on-branch:
+  <<: *gke_test_definition
+  variables:
+    <<: *test_cloud_definition
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  only:
+    - branches
+    - master
 
 test:aws-on-tags:
   <<: *aws_test_definition
