@@ -23,9 +23,6 @@
   stage: build
   services:
     - docker:dind
-  variables:
-    DOCKER_HOST: tcp://localhost:2375
-    DOCKER_DRIVER: overlay2
   image: docker:latest
   before_script:
     - docker info
@@ -34,10 +31,15 @@
   - docker build -t $IMAGE_URI .
   - docker push $IMAGE_URI
 
+.dind_template:
+  variables: &dind_definition
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
 
 build:branch-image:
   <<: *build_definition
   variables:
+    <<: *dind_template
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
@@ -46,6 +48,7 @@ build:branch-image:
 build:tagged-image:
   <<: *build_definition
   variables:
+    <<: *dind_template
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
@@ -121,9 +124,8 @@ deploy:tagged-image:
   services:
     - docker:dind
   variables:
+    <<: *dind_template
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-    DOCKER_HOST: tcp://localhost:2375
-    DOCKER_DRIVER: overlay2
   only:
     - tags
   image: docker:latest
