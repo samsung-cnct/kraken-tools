@@ -90,7 +90,7 @@ build:tagged-image:
 test:aws-on-branch:
   <<: *aws_test_definition
   variables:
-    <<: test_cloud_definition
+    <<: *test_cloud_definition
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
