@@ -177,7 +177,7 @@ cleanup:branch-image:
   script:
   - /entrypoint.sh
 
-cleanup:branch-image:
+cleanup:tagged-image:
   stage: cleanup
   services:
     - docker:dind
