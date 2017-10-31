@@ -69,7 +69,7 @@ gke-branch:
   - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
   - chmod og-wrx /root/.ssh/id_rsa
   - echo $SSH_PUBLIC_KEY | base64 -d > /root/.ssh/id_rsa.pub
-  - echo $GKE_CONFIG | base64 -d > /root/.config/gcloud/robot.json
+  - echo $GKE_CONFIG | base64 -d > /root/.config/gcloud/patrickRobot.json
   - /bin/bash -c /gke-testing.sh
 
 aws-tags:
@@ -104,7 +104,7 @@ gke-tags:
   - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
   - chmod og-wrx /root/.ssh/id_rsa
   - echo $SSH_PUBLIC_KEY | base64 -d > /root/.ssh/id_rsa.pub
-  - echo $GKE_CONFIG | base64 -d > /root/.config/gcloud/robot.json
+  - echo $GKE_CONFIG | base64 -d > /root/.config/gcloud/patrickRobot.json
   - /bin/bash -c /gke-testing.sh
 
 deploy-tags:

@@ -6,7 +6,7 @@ git clone --branch master  https://github.com/samsung-cnct/kraken-lib.git ~/krak
 echo "now in local kraken-lib checkout"
 cd ~/kraken
 mkdir -p /root/.ssh
-build-scripts/fetch-credentials.sh
+#build-scripts/fetch-credentials.sh
 
 
 echo "prep complete, create config"
