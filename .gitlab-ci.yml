@@ -1,6 +1,6 @@
 #
 # Kraken Build File for GitLab
-# This pipeline requires 9 variables to be set in the CI/CD Settings
+# This pipeline requires 11 variables to be set in the CI/CD Settings
 #
 # General Test Cluster Variables:
 # SSH_KEY - base64 encoded ssh key for use with the test clusters (think ~/.ssh/id_rsa)
@@ -18,18 +18,28 @@
 # PUBLISH_USERNAME - the username for the registry
 # PUBLISH_PASSWORD - the password for the registry
 # PUBLISH_IMAGE - the image in the registry (organzation/namespace included, think samsung_cnct/kraken-tools)
-
+#
+# Cleanup Variables:
+# DOCKER_USERNAME - the username that has delete privileges to the image registry
+# DOCKER_PASSWORD - the password for the username that has delete privileges to the image registry
 stages:
   - build
   - test
   - deploy
   - cleanup
 
-.docker_template: &docker_definition
+build:branch-image:
   stage: build
   services:
     - docker:dind
   image: docker:latest
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  only:
+    - branches
+    - master
   before_script:
     - docker info
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
@@ -37,29 +47,23 @@ stages:
   - docker build -t $IMAGE_URI .
   - docker push $IMAGE_URI
 
-.dind_template:
-  variables: &dind_definition
+build:tagged-image:
+  stage: build
+  services:
+    - docker:dind
+  image: docker:latest
+  variables:
     DOCKER_HOST: tcp://localhost:2375
     DOCKER_DRIVER: overlay2
-
-#build:branch-image:
-#  <<: *docker_definition
-#  stage: build
-#  variables:
-#    <<: *dind_definition
-#    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
-#  only:
-#    - branches
-#    - master
-
-build:tagged-image:
-  <<: *docker_definition
-  stage: build
-  variables:
-    <<: *dind_definition
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+  - docker build -t $IMAGE_URI .
+  - docker push $IMAGE_URI
 
 .aws-test: &aws_test_definition
   stage: test
@@ -132,13 +136,20 @@ test:gke-on-tags:
 deploy:tagged-image:
   <<: *docker_definition
   stage: deploy
+  services:
+    - docker:dind
+  image: docker:latest
   variables:
-    <<: *dind_definition
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
-  script:
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker login -u $PUBLISH_USERNAME -p $PUBLISH_PASSWORD $PUBLISH_REGISTRY
+  script:
     - docker pull $IMAGE_URI
     - docker tag $IMAGE_URI ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
     - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
@@ -154,11 +165,32 @@ cleanup:branch-image:
   variables:
     DOCKER_HOST: tcp://localhost:2375
     DOCKER_DRIVER: overlay2
-    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
     DOCKER_REGISTRY: $CI_REGISTRY
     DOCKER_PROJECT: $CI_PROJECT_PATH
-    #DOCKER_TAG: branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
-    DOCKER_TAG: branch-add_gitlab-59
+    DOCKER_TAG: branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  only:
+    - branches
+    - master
+  when: always
+  allow_failure: true
+  image: registry.cnct.io/venezia/docker-registry-curl:v0.1.0
+  script:
+  - /entrypoint.sh
+
+cleanup:branch-image:
+  stage: cleanup
+  services:
+    - docker:dind
+  image: docker:latest
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_REGISTRY: $CI_REGISTRY
+    DOCKER_PROJECT: $CI_PROJECT_PATH
+    DOCKER_TAG: $CI_COMMIT_TAG
   only:
     - branches
     - master
