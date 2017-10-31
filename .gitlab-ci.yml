@@ -42,15 +42,15 @@ stages:
     DOCKER_HOST: tcp://localhost:2375
     DOCKER_DRIVER: overlay2
 
-build:branch-image:
-  <<: *docker_definition
-  stage: build
-  variables:
-    <<: *dind_definition
-    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
-  only:
-    - branches
-    - master
+#build:branch-image:
+#  <<: *docker_definition
+#  stage: build
+#  variables:
+#    <<: *dind_definition
+#    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+#  only:
+#    - branches
+#    - master
 
 build:tagged-image:
   <<: *docker_definition
@@ -156,10 +156,9 @@ cleanup:branch-image:
     DOCKER_DRIVER: overlay2
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
     DOCKER_REGISTRY: $CI_REGISTRY
-    DOCKER_USERNAME: gitlab-ci-token
-    DOCKER_PASSWORD: $CI_JOB_TOKEN
     DOCKER_PROJECT: $CI_PROJECT_PATH
-    DOCKER_TAG: branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+    #DOCKER_TAG: branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+    DOCKER_TAG: branch-add_gitlab-59
   only:
     - branches
     - master
