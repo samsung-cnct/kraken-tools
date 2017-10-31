@@ -191,8 +191,7 @@ cleanup:tagged-image:
     DOCKER_PROJECT: $CI_PROJECT_PATH
     DOCKER_TAG: $CI_COMMIT_TAG
   only:
-    - branches
-    - master
+    - tags
   when: always
   allow_failure: true
   image: registry.cnct.io/venezia/docker-registry-curl:v0.1.0
