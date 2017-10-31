@@ -144,10 +144,16 @@ deploy:tagged-image:
     - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
 
 cleanup:branch-image:
-  <<: *docker_definition
   stage: cleanup
+  services:
+    - docker:dind
+  image: docker:latest
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   variables:
-    <<: *dind_definition
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
     DOCKER_REGISTRY: $CI_REGISTRY
     DOCKER_USERNAME: gitlab-ci-token
@@ -160,3 +166,5 @@ cleanup:branch-image:
   when: always
   allow_failure: true
   image: registry.cnct.io/venezia/docker-registry-curl:v0.1.0
+  script:
+  - /entrypoint.sh
