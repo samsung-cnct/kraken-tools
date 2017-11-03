@@ -24,10 +24,10 @@ ENV     ETCDCTL_API=3
 ENV     K8S_VERSION=v1.8.1
 ENV     K8S_HELM_VERSION=v2.7.0
 
-ENV     K8S_VERSION_1_6=v1.6.11
-ENV     K8S_1_6_SHA256=c11e96a89b1e825104b7a6fe93eca4809190c3ba08871754a0d2f11fa58871f8
-ENV     K8S_VERSION_1_7=v1.7.8
-ENV     K8S_1_7_SHA256=c4fd350f9fac76121dda479c1ceba2d339b19f8806aa54207eff55c9c6896724
+ENV     K8S_VERSION_1_6=v1.6.12
+ENV     K8S_1_6_SHA256=03abadad4a51ef94ddc0390ecd981546990aa994bf7eec886a1c1088bfa1c425
+ENV     K8S_VERSION_1_7=v1.7.9
+ENV     K8S_1_7_SHA256=c3b06b46ca087cacec53fb61a95b5237d53047e45b272b5eadd47dce553cac32
 ENV     K8S_VERSION_1_8=v1.8.2
 ENV     K8S_1_8_SHA256=c5c258b0728d9c0806b34079e130f21f304439c9a824d46ce3d62ad4dbeeb0d0
 
@@ -106,7 +106,7 @@ RUN     mkdir -p /opt/cnct/kubernetes/v1.6/bin \
                  /etc/helm/plugins
 
 # Kubectl
-RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/v1.6.11/bin/linux/amd64/kubectl && \
+RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_6}/bin/linux/amd64/kubectl && \
         echo "${K8S_1_6_SHA256}  kubectl" | sha256sum -c - && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.6/bin
