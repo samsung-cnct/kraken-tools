@@ -9,7 +9,7 @@ mkdir -p /root/.ssh
 build-scripts/fetch-credentials.sh
 
 echo "prep complete, create config"
-bin/up.sh --generate cluster/aws/config.yaml
+bin/up.sh --generate --config cluster/aws/config.yaml
 
 echo "modify config in-place"
 build-scripts/update-generated-config.sh cluster/aws/config.yaml ${JOB_BASE_NAME}-${BUILD_ID}
