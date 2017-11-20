@@ -56,7 +56,7 @@ ENV     APP_REGISTRY_URL=https://github.com/app-registry/appr-helm-plugin/releas
 # Alpine
 ADD     build/alpine-builds /alpine-builds
 
-ENV     APK_PACKAGES="bash ca-certificates openssl openssh python py-openssl py-pip py-cryptography py-cffi zip unzip wget util-linux bind-tools"
+ENV     APK_PACKAGES="bash ca-certificates openssl openssh python py-openssl py-pip py-cryptography py-cffi zip unzip wget util-linux bind-tools openntpd"
 ENV     APK_DEV_PACKAGES="gcc g++ git make libffi-dev linux-headers musl-dev libc-dev openssl-dev python-dev unzip mkinitfs kmod mtools squashfs-tools"
 
 RUN     apk add --update --no-cache ${APK_PACKAGES} ${APK_DEV_PACKAGES} && \
