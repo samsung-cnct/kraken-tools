@@ -11,7 +11,7 @@ build-scripts/fetch-credentials.sh
 
 echo "prep complete, create config"
 mkdir -p cluster/gke
-cp ansible/roles/kraken.config/files/gke-config.yaml cluster/gke/config.yaml
+bin/up.sh --generate --provider GKE --config cluster/gke/config.yaml
 
 echo "modify config in-place"
 build-scripts/update-generated-config.sh cluster/gke/config.yaml ${JOB_BASE_NAME}-${BUILD_ID}
