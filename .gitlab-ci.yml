@@ -1,0 +1,40 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker info
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+variables:
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_DRIVER: overlay2
+  IMAGE_PROD_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  REGISTRY: quay.io
+  REGISTRY_USER: your_org # we set this to override to samsung_cnct in gitlab Group Variables
+
+
+stages:
+  - build
+
+build-branch:
+  variables:
+    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
+  stage: build
+  only:
+    - branches
+  except:
+    - master
+  script:
+  - docker build -t $IMAGE_DEVL_NAME .
+  - docker push $IMAGE_DEVL_NAME
+
+build-master:
+  stage: build
+  only:
+    - master
+    - tags
+  script:
+  - docker build -t $IMAGE_PROD_NAME .
+  - docker push $IMAGE_PROD_NAME
