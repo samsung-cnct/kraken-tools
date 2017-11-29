@@ -24,7 +24,7 @@ stages:
   - publish
   - cleanup
 
-build:branch-image:
+build-branch:
   variables:
     IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
   stage: build
