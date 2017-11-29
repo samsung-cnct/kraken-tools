@@ -22,11 +22,6 @@
 # Cleanup Variables:
 # DOCKER_USERNAME - the username that has delete privileges to the image registry
 # DOCKER_PASSWORD - the password for the username that has delete privileges to the image registry
-image: docker:latest
-
-services:
-  - docker:dind
-
 before_script:
   - docker info
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
