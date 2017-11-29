@@ -1,40 +1,199 @@
-image: docker:latest
-
-services:
-  - docker:dind
-
-before_script:
-  - docker info
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-
-variables:
-  DOCKER_HOST: tcp://localhost:2375
-  DOCKER_DRIVER: overlay2
-  IMAGE_PROD_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-  REGISTRY: quay.io
-  REGISTRY_USER: your_org # we set this to override to samsung_cnct in gitlab Group Variables
-
-
+#
+# Kraken Build File for GitLab
+# This pipeline requires 11 variables to be set in the CI/CD Settings
+#
+# General Test Cluster Variables:
+# SSH_KEY - base64 encoded ssh key for use with the test clusters (think ~/.ssh/id_rsa)
+# SSH_PUBLIC_KEY - base64 encoded ssh public key for use with the test clusters (think ~/.ssh/id_rsa.pub)
+#
+# AWS Cluster Variables:
+# AWS_CREDENTIALS - base64 encoded credentials file (think ~/.aws/credentials)
+# AWS_CONFIG - base64 encoded config file (think ~/.aws/config)
+#
+# GKE Cluster Variables:
+# GKE_CONFIG - base64 encoded json file (think ~/.config/gcloud/someconfig.json)
+#
+# Publish Variables:
+# PUBLISH_REGISTRY - the registry you want to publish to (think quay.io)
+# PUBLISH_USERNAME - the username for the registry
+# PUBLISH_PASSWORD - the password for the registry
+# PUBLISH_IMAGE - the image in the registry (organzation/namespace included, think samsung_cnct/kraken-tools)
+#
+# Cleanup Variables:
+# DOCKER_USERNAME - the username that has delete privileges to the image registry
+# DOCKER_PASSWORD - the password for the username that has delete privileges to the image registry
 stages:
   - build
+  - test
+  - deploy
+  - cleanup
 
-build-branch:
-  variables:
-    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
+build:branch-image:
   stage: build
+  services:
+    - docker:dind
+  image: docker:latest
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
-  except:
     - master
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-  - docker build -t $IMAGE_DEVL_NAME .
-  - docker push $IMAGE_DEVL_NAME
+  - docker build -t $IMAGE_URI .
+  - docker push $IMAGE_URI
 
-build-master:
+build:tagged-image:
   stage: build
+  services:
+    - docker:dind
+  image: docker:latest
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
-    - master
     - tags
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-  - docker build -t $IMAGE_PROD_NAME .
-  - docker push $IMAGE_PROD_NAME
+  - docker build -t $IMAGE_URI .
+  - docker push $IMAGE_URI
+
+.aws-test: &aws_test_definition
+  stage: test
+  variables:
+    JOB_BASE_NAME: ${CI_PROJECT_NAME}
+    BUILD_ID: $CI_PIPELINE_ID
+  image: $IMAGE_URI
+  script:
+  - mkdir -p /root/.ssh /root/.aws
+  - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
+  - chmod og-wrx /root/.ssh/id_rsa
+  - echo $SSH_PUBLIC_KEY | base64 -d > /root/.ssh/id_rsa.pub
+  - echo $AWS_CREDENTIALS | base64 -d > /root/.aws/credentials
+  - echo $AWS_CONFIG | base64 -d > /root/.aws/config
+  - /bin/bash -c /aws-testing.sh
+
+.gke-test: &gke_test_definition
+  stage: test
+  variables:
+    JOB_BASE_NAME: ${CI_PROJECT_NAME}
+    BUILD_ID: $CI_PIPELINE_ID
+  image: $IMAGE_URI
+  script:
+  - mkdir -p /root/.ssh /root/.config/gcloud/
+  - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
+  - chmod og-wrx /root/.ssh/id_rsa
+  - echo $SSH_PUBLIC_KEY | base64 -d > /root/.ssh/id_rsa.pub
+  - echo $GKE_CONFIG | base64 -d > /root/.config/gcloud/patrickRobot.json
+  - /bin/bash -c /gke-testing.sh
+
+.test_cloud_template:
+  variables: &test_cloud_definition
+    JOB_BASE_NAME: ${CI_PROJECT_NAME}
+    BUILD_ID: $CI_PIPELINE_ID
+
+test:aws-on-branch:
+  <<: *aws_test_definition
+  variables:
+    <<: *test_cloud_definition
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  only:
+    - branches
+    - master
+
+test:gke-on-branch:
+  <<: *gke_test_definition
+  variables:
+    <<: *test_cloud_definition
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  only:
+    - branches
+    - master
+
+test:aws-on-tags:
+  <<: *aws_test_definition
+  variables:
+    <<: *test_cloud_definition
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  only:
+    - tags
+
+test:gke-on-tags:
+  <<: *gke_test_definition
+  variables:
+    <<: *test_cloud_definition
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  only:
+    - tags
+
+deploy:tagged-image:
+  stage: deploy
+  services:
+    - docker:dind
+  image: docker:latest
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  only:
+    - tags
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker login -u $PUBLISH_USERNAME -p $PUBLISH_PASSWORD $PUBLISH_REGISTRY
+  script:
+    - docker pull $IMAGE_URI
+    - docker tag $IMAGE_URI ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
+    - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
+
+cleanup:branch-image:
+  stage: cleanup
+  services:
+    - docker:dind
+  image: docker:latest
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_REGISTRY: $CI_REGISTRY
+    DOCKER_PROJECT: $CI_PROJECT_PATH
+    DOCKER_TAG: branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  only:
+    - branches
+    - master
+  when: always
+  allow_failure: true
+  image: registry.cnct.io/venezia/docker-registry-curl:v0.1.0
+  script:
+  - /entrypoint.sh
+
+cleanup:tagged-image:
+  stage: cleanup
+  services:
+    - docker:dind
+  image: docker:latest
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_REGISTRY: $CI_REGISTRY
+    DOCKER_PROJECT: $CI_PROJECT_PATH
+    DOCKER_TAG: $CI_COMMIT_TAG
+  only:
+    - tags
+  when: always
+  allow_failure: true
+  image: registry.cnct.io/venezia/docker-registry-curl:v0.1.0
+  script:
+  - /entrypoint.sh
