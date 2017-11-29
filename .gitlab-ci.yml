@@ -1,57 +1,69 @@
-"before_script":
-- "docker info"
-- "docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY"
-"build-branch":
-  "except":
-  - "master"
-  "only":
-  - "branches"
-  "script":
-  - "docker build -t $IMAGE_DEVL_NAME ."
-  - "docker push $IMAGE_DEVL_NAME"
-  "stage": "build"
-  "variables":
-    "IMAGE_DEVL_NAME": "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID"
-"build-master":
-  "only":
-  - "master"
-  - "tags"
-  "script":
-  - "docker build -t $IMAGE_PROD_NAME ."
-  - "docker push $IMAGE_PROD_NAME"
-  "stage": "build"
-"image": "docker:latest"
-"report-status":
-  "after_script":
-  - "curl -XPOST https://failfast.ci.cnct.io//api/v1/github_statuses -d \"{\\\"ci_project_id\\\": \\\"$CI_PROJECT_ID\\\", \\\"ci_sha\\\": \\\"$CI_BUILD_REF\\\", \\\"sha\\\": \\\"$SHA\\\", \\\"ci_ref\\\": \\\"$CI_COMMIT_REF_NAME\\\", \\\"github_repo\\\": \\\"$GITHUB_REPO\\\", \\\"installation_id\\\": \\\"$GITHUB_INSTALLATION_ID\\\", \\\"delay\\\": 30}\" || true"
-  - "curl -XPOST https://failfast.ci.cnct.io//api/v1/github_statuses -d \"{\\\"ci_project_id\\\": \\\"$CI_PROJECT_ID\\\", \\\"ci_sha\\\": \\\"$CI_BUILD_REF\\\", \\\"sha\\\": \\\"$SHA\\\", \\\"ci_ref\\\": \\\"$CI_COMMIT_REF_NAME\\\", \\\"github_repo\\\": \\\"$GITHUB_REPO\\\", \\\"installation_id\\\": \\\"$GITHUB_INSTALLATION_ID\\\", \\\"delay\\\": 150}\" || true"
-  "before_script": []
-  "image": "python:2.7"
-  "script":
-  - "echo curl -XPOST https://failfast.ci.cnct.io//api/v1/github_statuses -d \"{\\\"ci_project_id\\\": \\\"$CI_PROJECT_ID\\\", \\\"ci_sha\\\": \\\"$CI_BUILD_REF\\\", \\\"sha\\\": \\\"$SHA\\\", \\\"ci_ref\\\": \\\"$CI_COMMIT_REF_NAME\\\", \\\"github_repo\\\": \\\"$GITHUB_REPO\\\", \\\"installation_id\\\": \\\"$GITHUB_INSTALLATION_ID\\\", \\\"delay\\\": 30}\" || true"
-  - "echo curl -XPOST https://failfast.ci.cnct.io//api/v1/github_statuses -d \"{\\\"ci_project_id\\\": \\\"$CI_PROJECT_ID\\\", \\\"ci_sha\\\": \\\"$CI_BUILD_REF\\\", \\\"sha\\\": \\\"$SHA\\\", \\\"ci_ref\\\": \\\"$CI_COMMIT_REF_NAME\\\", \\\"github_repo\\\": \\\"$GITHUB_REPO\\\", \\\"installation_id\\\": \\\"$GITHUB_INSTALLATION_ID\\\", \\\"delay\\\": 150}\" || true"
-  "stage": "github-status-update"
-  "tags":
-  - "failfast-ci"
-  "when": "always"
-"services":
-- "docker:dind"
-"stages":
-- "build"
-- "github-status-update"
-"variables":
-  "CI_REF": "pr-158-lp-157"
-  "DOCKER_DRIVER": "overlay2"
-  "DOCKER_HOST": "tcp://localhost:2375"
-  "EVENT": "pull_request"
-  "FAILFASTCI_STATUS_API": "https://failfast.ci.cnct.io//api/v1/github_status"
-  "GITHUB_INSTALLATION_ID": "64807"
-  "GITHUB_REPO": "samsung-cnct/kraken-tools"
-  "IMAGE_PROD_NAME": "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
-  "PR_ID": "158"
-  "REF_NAME": "lp-157"
-  "REGISTRY": "quay.io"
-  "REGISTRY_USER": "your_org"
-  "SHA": "d93c350ffa97ff4e9f43fc920577c33be67bbb9a"
-  "SHA8": "d93c350f"
-  "SOURCE_REF": "lp-157"
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker info
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+variables:
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_DRIVER: overlay2
+  IMAGE_PROD_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  REGISTRY: quay.io
+  REGISTRY_USER: your_org # we set this to override to samsung_cnct in gitlab Group Variables
+# Create a Gitlab Secret Variable called REGISTRY_PASSWORD and assign it the value of the registry robot docker login password.
+# DO NOT PASTE THIS PASSWORD HERE.
+
+stages:
+  - build
+  # - test
+  # - publish
+
+build-branch:
+  variables:
+    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
+  stage: build
+  only:
+    - branches
+  except:
+    - master
+  script:
+  - docker build -t $IMAGE_DEVL_NAME .
+  - docker push $IMAGE_DEVL_NAME
+
+build-master:
+  stage: build
+  only:
+    - master
+    - tags
+  script:
+  - docker build -t $IMAGE_PROD_NAME .
+  - docker push $IMAGE_PROD_NAME
+
+# Tests go here!
+# test:
+#    stage: test
+
+publish-master:
+  stage: publish
+  only:
+    - master
+  script:
+  - docker pull $IMAGE_PROD_NAME
+  - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
+  # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
+  - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:latest
+  - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:latest
+
+publish-version-tag:
+  stage: publish
+  only:
+    - /v[0-9]+\.[0-9]+(\.[0-9]+[a-z]?)?/
+  script:
+  - docker pull $IMAGE_PROD_NAME
+  - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
+  # A tag push to master will be pushed to Quay with that tag
+  - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$CI_COMMIT_TAG
+  - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$CI_COMMIT_TAG
