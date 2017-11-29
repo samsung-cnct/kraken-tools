@@ -1,4 +1,3 @@
-#
 # Kraken Build File for GitLab
 # This pipeline requires 11 variables to be set in the CI/CD Settings
 #
