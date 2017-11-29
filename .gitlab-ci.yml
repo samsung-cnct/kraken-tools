@@ -46,24 +46,24 @@ build-master:
 # test:
 #    stage: test
 
-publish-master:
-  stage: publish
-  only:
-    - master
-  script:
-  - docker pull $IMAGE_PROD_NAME
-  - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
-  # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
-  - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:latest
-  - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:latest
+# publish-master:
+#   stage: publish
+#   only:
+#     - master
+#   script:
+#   - docker pull $IMAGE_PROD_NAME
+#   - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
+#   # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
+#   - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:latest
+#   - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:latest
 
-publish-version-tag:
-  stage: publish
-  only:
-    - /v[0-9]+\.[0-9]+(\.[0-9]+[a-z]?)?/
-  script:
-  - docker pull $IMAGE_PROD_NAME
-  - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
-  # A tag push to master will be pushed to Quay with that tag
-  - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$CI_COMMIT_TAG
-  - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$CI_COMMIT_TAG
+# publish-version-tag:
+#   stage: publish
+#   only:
+#     - /v[0-9]+\.[0-9]+(\.[0-9]+[a-z]?)?/
+#   script:
+#   - docker pull $IMAGE_PROD_NAME
+#   - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
+#   # A tag push to master will be pushed to Quay with that tag
+#   - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$CI_COMMIT_TAG
+#   - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$CI_COMMIT_TAG
