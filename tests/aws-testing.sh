@@ -12,7 +12,7 @@ echo "prep complete, create config"
 bin/up.sh --generate --config cluster/aws/config.yaml
 
 echo "modify config in-place"
-build-scripts/update-generated-config.sh cluster/aws/config.yaml ${BUILD_ID}
+build-scripts/update-generated-config.sh cluster/aws/config.yaml lp-${BUILD_ID}
 
 echo "adding helm_override and setting it to false"
 job_name=`echo ${JOB_BASE_NAME}-${BUILD_ID} | tr '[:upper:]' '[:lower:]' | tr '-' '_'`
