@@ -10,7 +10,7 @@ before_script:
 variables:
   DOCKER_HOST: tcp://localhost:2375
   DOCKER_DRIVER: overlay2
-  IMAGE_PROD_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  IMAGE_PROD_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   REGISTRY: quay.io
   IMAGE_NAME: kraken-tools
   REGISTRY_USER: your_org # we set this to override to samsung_cnct in gitlab Group Variables
@@ -26,8 +26,7 @@ stages:
 
 build-branch:
   variables:
-    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
-  stage: build
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
   except:
@@ -97,21 +96,21 @@ test:gke-on-branch:
     - branches
     - master
 
-test:aws-on-tags:
-  <<: *aws_test_definition
-  variables:
-    <<: *test_cloud_definition
-    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-  only:
-    - tags
+# test:aws-on-tags:
+#   <<: *aws_test_definition
+#   variables:
+#     <<: *test_cloud_definition
+#     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+#   only:
+#     - tags
 
-test:gke-on-tags:
-  <<: *gke_test_definition
-  variables:
-    <<: *test_cloud_definition
-    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-  only:
-    - tags
+# test:gke-on-tags:
+#   <<: *gke_test_definition
+#   variables:
+#     <<: *test_cloud_definition
+#     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+#   only:
+#     - tags
 
 publish-master:
   stage: publish
