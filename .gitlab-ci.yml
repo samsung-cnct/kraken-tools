@@ -15,6 +15,8 @@ variables:
   IMAGE_NAME: kraken-tools
   REGISTRY_USER: your_org # we set this to override to samsung_cnct in gitlab Group Variables
   ROBOT_ACCOUNT: kraken_tools_rw
+# Create a Gitlab Secret Variable called REGISTRY_PASSWORD and assign it the value of the registry robot docker login password.
+# DO NOT PASTE THIS PASSWORD HERE.
 
 stages:
   - build
@@ -24,15 +26,15 @@ stages:
 
 build-branch:
   variables:
-    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
   stage: build
   only:
     - branches
   except:
     - master
   script:
-  - docker build -t $IMAGE_DEVL_NAME .
-  - docker push $IMAGE_DEVL_NAME
+  - docker build -t $IMAGE_URI .
+  - docker push $IMAGE_URI
 
 build-master:
   stage: build
@@ -47,8 +49,8 @@ build-master:
   stage: test
   variables:
     JOB_BASE_NAME: ${CI_PROJECT_NAME}
-    BUILD_ID: $CI_JOB_ID
-  image: $IMAGE_DEVL_NAME
+    BUILD_ID: $CI_PIPELINE_ID
+  image: $IMAGE_URI
   script:
   - mkdir -p /root/.ssh /root/.aws
   - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
@@ -62,8 +64,8 @@ build-master:
   stage: test
   variables:
     JOB_BASE_NAME: ${CI_PROJECT_NAME}
-    BUILD_ID: $CI_JOB_ID
-  image: $IMAGE_DEVL_NAME
+    BUILD_ID: $CI_PIPELINE_ID
+  image: $IMAGE_URI
   script:
   - mkdir -p /root/.ssh /root/.config/gcloud/
   - echo $SSH_KEY | base64 -d > /root/.ssh/id_rsa
@@ -75,13 +77,13 @@ build-master:
 .test_cloud_template:
   variables: &test_cloud_definition
     JOB_BASE_NAME: ${CI_PROJECT_NAME}
-    BUILD_ID: $CI_JOB_ID
+    BUILD_ID: $CI_PIPELINE_ID
 
 test:aws-on-branch:
   <<: *aws_test_definition
   variables:
     <<: *test_cloud_definition
-    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_JOB_ID
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
     - master
@@ -90,7 +92,7 @@ test:gke-on-branch:
   <<: *gke_test_definition
   variables:
     <<: *test_cloud_definition
-    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_JOB_ID
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
     - master
@@ -99,7 +101,7 @@ test:aws-on-tags:
   <<: *aws_test_definition
   variables:
     <<: *test_cloud_definition
-    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
 
@@ -107,7 +109,7 @@ test:gke-on-tags:
   <<: *gke_test_definition
   variables:
     <<: *test_cloud_definition
-    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
 
