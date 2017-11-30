@@ -1,11 +1,4 @@
-image: docker:latest
 
-services:
-  - docker:dind
-
-before_script:
-  - docker info
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 
 variables:
   DOCKER_HOST: tcp://localhost:2375
@@ -26,12 +19,18 @@ stages:
 
 build-branch:
   stage: build
+  services:
+    - docker:dind
+  image: docker:latest
   variables:
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
   except:
     - master
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
   - docker build -t $IMAGE_URI .
   - docker push $IMAGE_URI
