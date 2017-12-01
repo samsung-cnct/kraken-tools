@@ -37,6 +37,7 @@ stages:
   - publish
   - cleanup
 
+
 # build stage
 build-branch:
   stage: build
@@ -67,23 +68,6 @@ build-master:
   - docker build -t $IMAGE_URI .
   - docker push $IMAGE_URI
 
-# I don't know if I need both build-latest master and build-tagged master
-# build-master-tagged:
-#   stage: build
-#   services:
-#     - docker:dind
-#
-#   variables:
-#     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-#   only:
-#     - master
-#     - tags
-#   before_script:
-#     - docker info
-#     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-#   script:
-#   - docker build -t $IMAGE_URI .
-#   - docker push $IMAGE_URI
 
 # test
 .aws-test: &aws_test_definition
@@ -154,11 +138,12 @@ test:gke-on-tags:
   only:
     - tags
 
+
+# publish
 publish-latest-master:
   stage: publish
   variables:
-    # Is this right or should it be :latest?
-    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    IMAGE_URI: $CI_REGISTRY_IMAGE:latest
   only:
     - master
   before_script:
@@ -186,6 +171,7 @@ publish-tagged-master:
     - docker pull $IMAGE_URI
     - docker tag $IMAGE_URI ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
     - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
+
 
 # cleanup test docker containers
 cleanup-branch-image:
