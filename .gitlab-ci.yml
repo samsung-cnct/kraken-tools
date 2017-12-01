@@ -45,8 +45,6 @@ build-branch:
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
-  except:
-    - master
   before_script:
     - docker info
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
@@ -54,12 +52,11 @@ build-branch:
   - docker build -t $IMAGE_URI .
   - docker push $IMAGE_URI
 
-build-master:
+build-tag:
   stage: build
   variables:
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
-    - master
     - tags
   before_script:
     - docker info
@@ -155,7 +152,7 @@ publish-latest-master:
     - docker tag $IMAGE_URI ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:latest
     - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:latest
 
-publish-tagged-master:
+publish-tagged-image:
   stage: publish
   only:
     - /v[0-9]+\.[0-9]+(\.[0-9]+[a-z]?)?/
@@ -163,7 +160,6 @@ publish-tagged-master:
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
-    - master
   before_script:
     - docker info
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
