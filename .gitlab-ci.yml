@@ -1,15 +1,35 @@
+#
+# kraken-tools Build File for GitLab
+# This pipeline requires 11 variables to be set in the CI/CD Settings
+#
+# General Test Cluster Variables:
+# SSH_KEY - base64 encoded ssh key for use with the test clusters (think ~/.ssh/id_rsa)
+# SSH_PUBLIC_KEY - base64 encoded ssh public key for use with the test clusters (think ~/.ssh/id_rsa.pub)
+#
+# AWS Cluster Variables:
+# AWS_CREDENTIALS - base64 encoded credentials file (think ~/.aws/credentials)
+# AWS_CONFIG - base64 encoded config file (think ~/.aws/config)
+#
+# GKE Cluster Variables:
+# GKE_CONFIG - base64 encoded json file (think ~/.config/gcloud/someconfig.json)
+#
+# Publish Variables:
+# PUBLISH_REGISTRY - the registry you want to publish to (think quay.io)
+# PUBLISH_USERNAME - the username for the registry
+# PUBLISH_PASSWORD - the password for the registry
+# PUBLISH_IMAGE - the image in the registry (organzation/namespace included, think samsung_cnct/kraken-tools)
+#
+# Cleanup Variables:
+# DOCKER_USERNAME - the username that has delete privileges to the image registry
+# DOCKER_PASSWORD - the password for the username that has delete privileges to the image regist
+image: docker:latest
 
+services:
+  - docker:dind
 
 variables:
   DOCKER_HOST: tcp://localhost:2375
   DOCKER_DRIVER: overlay2
-  IMAGE_PROD_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-  # REGISTRY: quay.io
-  # IMAGE_NAME: kraken-tools
-  # REGISTRY_USER: your_org # we set this to override to samsung_cnct in gitlab Group Variables
-  # ROBOT_ACCOUNT: kraken_tools_rw
-# Create a Gitlab Secret Variable called REGISTRY_PASSWORD and assign it the value of the registry robot docker login password.
-# DO NOT PASTE THIS PASSWORD HERE.
 
 stages:
   - build
@@ -17,11 +37,9 @@ stages:
   - publish
   - cleanup
 
+# build stage
 build-branch:
   stage: build
-  services:
-    - docker:dind
-  image: docker:latest
   variables:
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
@@ -35,15 +53,39 @@ build-branch:
   - docker build -t $IMAGE_URI .
   - docker push $IMAGE_URI
 
-# build-master:
+build-master:
+  stage: build
+  variables:
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  only:
+    - master
+    - tags
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+  - docker build -t $IMAGE_URI .
+  - docker push $IMAGE_URI
+
+# I don't know if I need both build-latest master and build-tagged master
+# build-master-tagged:
 #   stage: build
+#   services:
+#     - docker:dind
+#
+#   variables:
+#     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
 #   only:
 #     - master
 #     - tags
+#   before_script:
+#     - docker info
+#     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 #   script:
-#   - docker build -t $IMAGE_PROD_NAME .
-#   - docker push $IMAGE_PROD_NAME
+#   - docker build -t $IMAGE_URI .
+#   - docker push $IMAGE_URI
 
+# test
 .aws-test: &aws_test_definition
   stage: test
   variables:
@@ -96,40 +138,87 @@ test:gke-on-branch:
     - branches
     - master
 
-# test:aws-on-tags:
-#   <<: *aws_test_definition
-#   variables:
-#     <<: *test_cloud_definition
-#     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-#   only:
-#     - tags
+test:aws-on-tags:
+  <<: *aws_test_definition
+  variables:
+    <<: *test_cloud_definition
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  only:
+    - tags
 
-# test:gke-on-tags:
-#   <<: *gke_test_definition
-#   variables:
-#     <<: *test_cloud_definition
-#     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-#   only:
-#     - tags
+test:gke-on-tags:
+  <<: *gke_test_definition
+  variables:
+    <<: *test_cloud_definition
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  only:
+    - tags
 
-# publish-master:
-#   stage: publish
-#   only:
-#     - master
-#   script:
-#   - docker pull $IMAGE_PROD_NAME
-#   - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
-#   # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
-#   - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:latest
-#   - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:latest
+publish-latest-master:
+  stage: publish
+  variables:
+    # Is this right or should it be :latest?
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  only:
+    - master
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker login -u $PUBLISH_USERNAME -p $PUBLISH_PASSWORD $PUBLISH_REGISTRY
+  script:
+    - docker pull $IMAGE_URI
+    - docker tag $IMAGE_URI ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:latest
+    - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:latest
 
-# publish-version-tag:
-#   stage: publish
-#   only:
-#     - /v[0-9]+\.[0-9]+(\.[0-9]+[a-z]?)?/
-#   script:
-#   - docker pull $IMAGE_PROD_NAME
-#   - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
-#   # A tag push to master will be pushed to Quay with that tag
-#   - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$CI_COMMIT_TAG
-#   - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$CI_COMMIT_TAG
+publish-tagged-master:
+  stage: publish
+  only:
+    - /v[0-9]+\.[0-9]+(\.[0-9]+[a-z]?)?/
+  variables:
+    IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  only:
+    - tags
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker login -u $PUBLISH_USERNAME -p $PUBLISH_PASSWORD $PUBLISH_REGISTRY
+  script:
+    - docker pull $IMAGE_URI
+    - docker tag $IMAGE_URI ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
+    - docker push ${PUBLISH_REGISTRY}/${PUBLISH_IMAGE}:${CI_COMMIT_TAG}
+
+# cleanup test docker containers
+cleanup-branch-image:
+  stage: cleanup
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  variables:
+    DOCKER_REGISTRY: $CI_REGISTRY
+    DOCKER_PROJECT: $CI_PROJECT_PATH
+    DOCKER_TAG: branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  only:
+    - branches
+    - master
+  when: always
+  allow_failure: true
+  image: registry.cnct.io/venezia/docker-registry-curl:v0.1.0
+  script:
+  - /entrypoint.sh
+
+cleanup-tagged-image:
+  stage: cleanup
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  variables:
+    DOCKER_REGISTRY: $CI_REGISTRY
+    DOCKER_PROJECT: $CI_PROJECT_PATH
+    DOCKER_TAG: $CI_COMMIT_TAG
+  only:
+    - tags
+  when: always
+  allow_failure: true
+  image: registry.cnct.io/venezia/docker-registry-curl:v0.1.0
+  script:
+  - /entrypoint.sh

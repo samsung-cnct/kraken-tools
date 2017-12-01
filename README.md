@@ -1,3 +1,5 @@
+[![pipeline status](https://git.cnct.io/common-tools/samsung-cnct_kraken-tools/badges/master/pipeline.svg)](https://git.cnct.io/common-tools/samsung-cnct_kraken-tools/commits/master)
+
 # kraken-tools
 
 kraken-tools conveniently manages all system requirements for [kraken-lib](https://github.com/samsung-cnct/kraken-lib). As the base layer, it contains all necessary and expected dependencies at specific, tested versions for correct and repeatable operations of kraken-lib and [kraken](https://github.com/samsung-cnct/kraken). 
