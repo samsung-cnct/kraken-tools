@@ -163,6 +163,7 @@ publish-tagged-master:
     IMAGE_URI: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags
+    - master
   before_script:
     - docker info
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
