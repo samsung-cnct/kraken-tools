@@ -108,7 +108,6 @@ test:aws-on-branch:
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
-    - master
 
 test:gke-on-branch:
   <<: *gke_test_definition
@@ -117,7 +116,6 @@ test:gke-on-branch:
     IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
-    - master
 
 test:aws-on-tags:
   <<: *aws_test_definition
@@ -182,7 +180,6 @@ cleanup-branch-image:
     DOCKER_TAG: branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - branches
-    - master
   when: always
   allow_failure: true
   image: registry.cnct.io/venezia/docker-registry-curl:v0.1.0
