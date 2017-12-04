@@ -14,7 +14,7 @@ mkdir -p cluster/gke
 bin/up.sh --generate --provider GKE --config cluster/gke/config.yaml
 
 echo "modify config in-place"
-build-scripts/update-generated-config.sh cluster/gke/config.yaml ${JOB_BASE_NAME}-${BUILD_ID}
+build-scripts/update-generated-config.sh cluster/gke/config.yaml krakentools-${BUILD_ID}
 
 echo "up and down"
 err=0
