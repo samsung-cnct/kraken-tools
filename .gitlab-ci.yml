@@ -140,7 +140,7 @@ test:gke-on-tags:
 publish-latest-master:
   stage: publish
   variables:
-    IMAGE_URI: $CI_REGISTRY_IMAGE:latest
+    IMAGE_URI: $CI_REGISTRY_IMAGE:branch-$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   only:
     - master
   before_script:
