@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.7
 MAINTAINER Michael Venezia <mvenezia@gmail.com>
 
 ENV     TERRAFORM_VERSION=0.8.6
