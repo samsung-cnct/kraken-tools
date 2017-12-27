@@ -31,13 +31,15 @@ ENV     K8S_1_7_SHA256=2885776fa5c80fd8b504e3ac119343c9117c156be68682d0c4e8c7f1b
 ENV     K8S_VERSION_1_8=v1.8.5
 ENV     K8S_1_8_SHA256=2663511441d44b844a25925b7d74d9326d86b8347408d21ed6efbd27a7f7109a
 ENV     K8S_VERSION_1_9=v1.9.0
-ENV     K8S_1_9_SHA256=ba96c8e71dba68b1b3abcad769392fb4df53e402cb65ef25cd176346ee2c39e8
+ENV     K8S_1_9_SHA256=9150691c3c9d0c3d6c0c570a81221f476e107994b35e33c193b1b90b7b7c0cb5
 
 ENV     K8S_HELM_VERSION_1_6=v2.5.1
 ENV     HELM_2_5_SHA256=0ea53d0d6086805f8f22c609a2f1b5b21ced96d5cf4c6a4a70588bc3822e79c2
 ENV     K8S_HELM_VERSION_1_7=v2.6.2
 ENV     HELM_2_6_SHA256=ba807d6017b612a0c63c093a954c7d63918d3e324bdba335d67b7948439dbca8
 ENV     K8S_HELM_VERSION_1_8=v2.7.2
+ENV     HELM_2_7_SHA256=9f04c4824fc751d6c932ae5b93f7336eae06e78315352aa80241066aa1d66c49
+ENV     K8S_HELM_VERSION_1_9=v2.7.2
 ENV     HELM_2_7_SHA256=9f04c4824fc751d6c932ae5b93f7336eae06e78315352aa80241066aa1d66c49
 
 ENV     CRASH_APP_SHA256=7f0697cf50a98d87a14be5d4c2d2a31a166df8d7a5eed830a90ead8b49bf3d97
@@ -105,6 +107,7 @@ RUN     wget -q -O etcd.tgz https://github.com/coreos/etcd/releases/download//${
 RUN     mkdir -p /opt/cnct/kubernetes/v1.6/bin \
                  /opt/cnct/kubernetes/v1.7/bin \
                  /opt/cnct/kubernetes/v1.8/bin \
+                 /opt/cnct/kubernetes/v1.9/bin \
                  /etc/helm/plugins
 
 # Kubectl
@@ -142,6 +145,11 @@ RUN     wget -q -O helm-1-8.tgz http://storage.googleapis.com/kubernetes-helm/he
         tar -zxvf helm-1-8.tgz  && \
         mv linux-amd64/helm /opt/cnct/kubernetes/v1.8/bin/helm  && \
         rm -rf linux-amd64 helm-1-8.tgz
+RUN     wget -q -O helm-1-9.tgz http://storage.googleapis.com/kubernetes-helm/helm-${K8S_HELM_VERSION_1_9}-linux-amd64.tar.gz  && \
+        echo "${HELM_2_7_SHA256}  helm-1-9.tgz" | sha256sum -c - && \
+        tar -zxvf helm-1-9.tgz  && \
+        mv linux-amd64/helm /opt/cnct/kubernetes/v1.9/bin/helm  && \
+        rm -rf linux-amd64 helm-1-9.tgz
 
 RUN ln -s /opt/cnct/kubernetes/${LATEST} /opt/cnct/kubernetes/latest && \
          ln -s /opt/cnct/kubernetes/${LATEST}/bin/kubectl /usr/bin/ && \
