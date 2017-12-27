@@ -21,7 +21,7 @@ ENV     ETCD_VERSION=v3.0.17
 ENV     ETCD_SHA256=274c46a7f8d26f7ae99d6880610f54933cbcf7f3beafa19236c52eb5df8c7a0b
 ENV     ETCDCTL_API=3
 
-ENV     K8S_VERSION=v1.8.5
+ENV     K8S_VERSION=v1.9.0
 ENV     K8S_HELM_VERSION=v2.7.2
 
 ENV     K8S_VERSION_1_6=v1.6.13
@@ -30,6 +30,8 @@ ENV     K8S_VERSION_1_7=v1.7.11
 ENV     K8S_1_7_SHA256=2885776fa5c80fd8b504e3ac119343c9117c156be68682d0c4e8c7f1b59b88cd
 ENV     K8S_VERSION_1_8=v1.8.5
 ENV     K8S_1_8_SHA256=2663511441d44b844a25925b7d74d9326d86b8347408d21ed6efbd27a7f7109a
+ENV     K8S_VERSION_1_9=v1.9.0
+ENV     K8S_1_9_SHA256=ba96c8e71dba68b1b3abcad769392fb4df53e402cb65ef25cd176346ee2c39e8
 
 ENV     K8S_HELM_VERSION_1_6=v2.5.1
 ENV     HELM_2_5_SHA256=0ea53d0d6086805f8f22c609a2f1b5b21ced96d5cf4c6a4a70588bc3822e79c2
@@ -41,8 +43,8 @@ ENV     HELM_2_7_SHA256=9f04c4824fc751d6c932ae5b93f7336eae06e78315352aa80241066a
 ENV     CRASH_APP_SHA256=7f0697cf50a98d87a14be5d4c2d2a31a166df8d7a5eed830a90ead8b49bf3d97
 
 # Latest version of tools
-ENV     LATEST=v1.8
-ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_8
+ENV     LATEST=v1.9
+ENV     K8S_VERSION_LATEST=$K8S_VERSION_1_9
 ENV     K8S_HELM_VERSION_LATEST=$K8S_HELM_VERSION_1_8
 
 ENV     GOPATH /go
@@ -118,6 +120,10 @@ RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_
         echo "${K8S_1_8_SHA256}  kubectl" | sha256sum -c - && \
         chmod a+x kubectl && \
         mv kubectl /opt/cnct/kubernetes/v1.8/bin
+RUN     wget -q https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION_1_9}/bin/linux/amd64/kubectl && \
+        echo "${K8S_1_9_SHA256}  kubectl" | sha256sum -c - && \
+        chmod a+x kubectl && \
+        mv kubectl /opt/cnct/kubernetes/v1.9/bin
 
 
 # Helm
